@@ -1,0 +1,135 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : object.qvs
+    Description : Module containing all the basical object management functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO CHECK OBJECT DEFINITION
+// ----------------------------------------------------------------------------------------------------------------
+/*
+ * Description : Check if a variable is defined in Qlik
+ *       Input : vVariableName - Name of the variable to watch
+ *      Output : vReturn - 0 : it doesn't exist
+ *                         1 : it exists
+ */
+Sub variable_exist(vVariableName)
+    IF (IsNull($(vVariableName))<>0) THEN
+        vReturn=0;
+    ELSE
+        vReturn=1;
+    END IF;
+End sub;
+
+/*
+ * Description : Check if a file exists at a specific path
+ *       Input : vFilePath - Path of the file to watch
+ *      Output : vReturn - 0 : it doesn't exist
+ *                         1 : it exists
+ */
+Sub file_exist(vFilePath)
+    IF (IsNull(filesize('$(vFilePath)'))) THEN
+        vReturn=0;
+    ELSE
+        vReturn=1;
+    END IF;
+End sub;
+
+/*
+ * Description : Check if a table exists
+ *       Input : vTableName - Name of the table to watch
+ *      Output : vReturn - 0 : it doesn't exist
+ *                         1 : it exists
+ */
+Sub table_exist(vTableName)
+    IF (Len(TableNumber('$(vTableName)'))>0) THEN
+        vReturn=1;
+    ELSE
+        vReturn=0;
+    END IF;
+End sub;
+
+/*
+ * Description : Check if a worksheet exists in an Excel document
+ *       Input : vFilePath      - Path of the Excel document
+ *               vWorksheetName - Name of the expected sheet
+ *      Output : vReturn - 0 : it doesn't exist
+ *                         1 : it exists
+ */
+Sub excel_worksheet_exist(vFilePath, vWorksheetName)
+    call table_drop('tmpExcelSheet');
+
+    call file_exist(vFilePath);
+    IF (vReturn<>0 AND LEN(vWorksheetName)>0) THEN
+        LET vErrorCountFunction = $(ScriptErrorCount);
+
+        tmpExcelSheet:
+        LOAD SUM(1) as nb_sheet
+        FROM [$(vFilePath)] (ooxml, embedded labels, table is $(vWorksheetName))
+        ;
+
+        IF (vErrorCountFunction<>ScriptErrorCount) THEN
+            LET vFileName=$(file_basename($vFilePath));
+            call console_error('Accès impossible au fichier $(vFileName)');
+            call console_print('Veuillez controler que la ressource ne soit pas utilisée par un autre processus (comme un partage)');
+            Exit Script;
+        END IF;
+
+        LET vNbSheet=Trim(FieldValue('nb_sheet', 1));
+        IF (vNbSheet>0) THEN
+            vReturn=1;
+        ELSE
+            vReturn=0;
+        END IF;
+    ELSE
+        vReturn=0;
+    END IF;
+End sub;
+
+/*
+ * Description : Check if a column exists in a specific table
+ *       Input : vTableName  - Name of the watch to watch
+ *               vColumnName - Name of the column to watch
+ *      Output : vReturn - 0 : it doesn't exist
+ *                         1 : it exists
+ */
+Sub column_exist(vTableName, vColumnName)
+    call table_exist(vTableName);
+    IF (vReturn=0) THEN
+        vReturn=0;
+    ELSE
+        LET vReturn=FieldNumber(vColumnName, vTableName);
+        IF (vReturn<=0) THEN
+            vReturn=0;
+        ELSE
+            vReturn=1;
+        END IF;
+    END IF;
+End sub;
+
+/*
+ * Description : Set a default value to a variable in the case it is not defined
+ *       Input : vVariableName - Name of the variable to watch
+ *      Output : None
+ */
+Sub variable_fill(vVariableName, vDefaultValue)
+    call variable_exist('$(vVariableName)');
+    IF (vReturn = 0) THEN
+        LET $(vVariableName)='$(vDefaultValue)';
+    END IF;
+End sub;
+
+  
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('Object module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('Object module successfully loaded');
+END IF;
+

@@ -1,0 +1,24 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : core.qvs
+    Description : Main script to load all the different components of 
+                  the custom Qlik library
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+// Keep reading the scripts even if some errors happen
+SET ErrorMode=0;
+
+// Load the different modules
+// WARNING - Put at first console and object modules
+$(Must_Include='$(vQliklibPath)\sub\console.qvs');
+$(Must_Include='$(vQliklibPath)\sub\object.qvs');
+$(Must_Include='$(vQliklibPath)\sub\file.qvs');
+$(Must_Include='$(vQliklibPath)\sub\table.qvs');
+$(Must_Include='$(vQliklibPath)\sub\log.qvs');
+$(Must_Include='$(vQliklibPath)\sub\date.qvs');
+$(Must_Include='$(vQliklibPath)\sub\string.qvs');
+call console_delimitation;
+

@@ -1,0 +1,25 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : log.qvs
+    Description : Module containing all the log functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH LOG FILE
+// ----------------------------------------------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('Log module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('Log module successfully loaded');
+END IF;
+

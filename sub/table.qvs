@@ -1,0 +1,209 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : table.qvs
+    Description : Module containing all the table management functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH THE TABLES
+// ----------------------------------------------------------------------------------------------------------------
+
+/*
+ * Description : Dropping a table after checking it exists (to avoid any error)
+ *       Input : vTableName  - Name of the table to drop
+ *      Output : None
+ */
+Sub table_drop(vTableName)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        DROP TABLE $(vTableName);
+    END IF;
+End sub;
+
+/*
+ * Description : Renaming a table
+ *               If the destination table already exists the table is overwritten
+ *       Input : vTableNameSrc - Source table
+ *               vTableNameDst - Destination table
+ *      Output : vReturn - 0 : nothind done since the table doesn't exist
+ *                         1 : the table was simply renamed
+ *                         2 : the table was renamed after dropping the previous table
+ */
+Sub table_rename(vTableNameSrc, vTableNameDst)
+    call table_exist(vTableNameSrc);
+    IF (vReturn = 0) THEN
+        vReturn=0;
+    ELSE
+        call table_exist(vTableNameDst);
+        IF (vReturn<>0) THEN
+            call table_drop(vTableNameDst);
+            vReturn=2;
+        ELSE
+            vReturn=1;
+        END IF;
+        RENAME TABLE $(vTableNameSrc) TO $(vTableNameDst);
+    END IF;
+End sub;
+
+/*
+ * Description : Dropping a column in a table after checking both exist (to avoid any error)
+ *       Input : vTableName  - Name of the table to watch
+ *               vColumnName - Name of the column to drop
+ *      Output : None
+ */
+Sub column_drop(vTableName, vColumnName)
+    call column_exist(vTableName, vColumnName);
+    IF (vReturn<>0) THEN
+        DROP FIELD $(vColumnName) $(vTableName);
+    END IF;
+End sub;
+
+Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
+    call column_exist(vTableName, vColumnNameSrc);
+    IF (vReturn = 0) THEN
+        vReturn=0;
+    ELSE
+        call column_exist(vTableName, vColumnNameDst);
+        IF (vReturn<>0) THEN
+            call column_drop(vTableName, vColumnNameDst);
+            vReturn=2;
+        ELSE
+            vReturn=1;
+        END IF;
+        RENAME FIELD $(vColumnNameSrc) TO $(vColumnNameDst);
+    END IF;
+End sub;
+
+
+/*
+ * Description : Write data from a table into a file 
+ *       Input : vTableName  - Name of the table to write
+ *               vFilePath   - Path of the file where to write data
+ *               vAppend     - Define if the file is overwritten or if the data are concatenated
+ *                             0 : truncate mode (default)
+ *                             1 : concatenation mode
+ *               vBufferName - Temporary table name
+ *      Output : None
+ */
+Sub table_file_write(vTableName, vFilePath, vAppend, vBufferName)
+    SET vDefaultAppend=0;
+    SET vDefaultBufferName='tmpFileBuffer';
+
+    call variable_fill('vAppend', '$(vDefaultAppend)');
+    call variable_fill('vBufferName', '$(vDefaultBufferName)');
+
+    call table_exist(vTableName);
+    IF (vReturn<>0) THEN
+        call file_option(vFilePath);
+
+        IF (vAppend<>0) THEN
+            table_rename(vTableName, vBufferName);
+
+            // Load the current content in the buffer table
+            $(vTableName):
+            NoConcatenate:
+            LOAD *
+            FROM [$(vFilePath)] $(vFileReadOption)
+            ;
+
+            // Add the new content in the buffer table
+            $(vTableName):
+            Concatenate:
+            LOAD *
+            RESIDENT $(vBufferName)
+            ;
+        END IF;
+
+        STORE $(vTableName) INTO $(vFilePath) $(vFileWriteOption)
+        ;
+
+        IF (vAppend<>0) THEN
+            call table_rename(vBufferName, vTableName);
+        END IF;
+    ELSE
+        call console_info('No data to write');
+    END IF;
+
+    LET vAppend=vDefaultAppend;
+    LET vBufferName=vDefaultBufferName;
+End  sub;
+
+/*
+ * Description : Load data from a file and put them in a table
+ *       Input : vFilePath   - Path of the file to read to load data
+ *               vTableName  - Name of the table where to write data
+ *               vAppend     - Define if the table is overwritten or if the data are concatenated
+ *                             0 : truncate mode
+ *                             1 : concatenation mode (default)
+ *      Output : None
+ */
+Sub file_table_read(vFilePath, vTableName, vAppend)
+    SET vDefaultAppend=1;
+    call variable_fill('vAppend', '$(vDefaultAppend)');
+
+    call file_exist(vFilePath);
+    IF (vReturn<>0) THEN
+        IF (vAppend=0) THEN
+            call table_drop(vTableName);
+        END IF;
+
+        call file_option(vFilePath);
+        call file_auxi_load;
+    ELSE
+        call console_info('No file to read');
+    END IF;
+
+    LET vAppend=vDefaultAppend;
+End  sub;
+
+/*
+ * Description : Load data from an excel document and put them in a table
+ *       Input : vFilePath      - Path of the file to read to load data
+ *               vWorksheetName - Name of a worksheet
+ *               vTableName     - Name of the table where to write data
+ *               vAppend        - Define if the table is overwritten or if the data are concatenated
+ *                             0 : truncate mode
+ *                             1 : concatenation mode (default)
+ *      Output : None
+ */
+Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend)
+    SET vDefaultAppend=1;
+    call variable_fill('vAppend', '$(vDefaultAppend)');
+
+    call excel_worksheet_exist(vFilePath, vWorksheetName);
+    IF (vReturn<>0) THEN
+        IF (vAppend=0) THEN
+            call table_drop(vTableName);
+        END IF;
+
+        call file_option(vFilePath, vWorksheetName);
+        call file_auxi_load;
+    ELSE
+        call console_info('No file to read');
+    END IF;
+
+    LET vAppend=vDefaultAppend;
+End sub;
+
+Sub file_auxi_load
+    $(vTableName):
+    LOAD *
+    FROM ['$(vFilePath)'] $(vFileReadOption)
+    ;
+End sub;
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('Table module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('Table module successfully loaded');
+END IF;
+

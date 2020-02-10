@@ -1,0 +1,32 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : string.qvs
+    Description : Module containing all the string useful functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH THE STRINGS
+// ----------------------------------------------------------------------------------------------------------------
+
+/*
+ * Description : Extract the main content of a string
+ *       Input : $1 - String to analyze
+ *      Output : None
+ */
+SET string_main = Trim(Subfield(Subfield($1, '-', 1), '(', 1));
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('String module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('String module successfully loaded');
+END IF;
+

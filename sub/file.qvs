@@ -1,0 +1,70 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : file.qvs
+    Description : Module containing all the file management functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH THE FILES
+// ----------------------------------------------------------------------------------------------------------------
+
+/*
+ * Description : Extract the directory of a file
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_dirname = Left('$1', Index('$1', '\', -1));
+
+/*
+ * Description : Extract the basename of a file
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_basename = Subfield('$1', '\', -1);
+
+/*
+ * Description : Extract the extension of a file
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_extension = Trim(Subfield(Subfield('$1', '\', -1), '.', -1));
+
+/*
+ * Description : Get from the path of a file the option to use to load or store data
+ *               The path doesn't require the file really exists
+ *       Input : vFilePath      - Path of the file to watch
+ *               vWorksheetName - Name of a worksheet (in a case of an Excel file)
+ *      Output : vFileReadOption  - Option to use to read this file
+ *               vFileWriteOption - Option to use to write in this file
+ */
+Sub file_option(vFilePath, vWorksheetName)
+    LET vFileExt = $(file_extension($vFilePath));
+    call excel_worksheet_exist(vFilePath, vWorksheetName);
+
+    IF (Upper(vFileExt)='QVD') THEN
+        SET vFileReadOption='(QVD)';
+        SET vFileWriteOption='(QVD)';
+    ELSEIF (vReturn<>0 AND (Upper(vFileExt)='XLS' OR Upper(vFileExt)='XLSX')) THEN
+        SET vFileReadOption='(ooxml, embedded labels, table is $(vWorksheetName))';
+        SET vFileReadOption='(ooxml, embedded labels, table is $(vWorksheetName))';
+    ELSE
+        SET vFileReadOption='(txt, utf8, embedded labels, delimiter is '';'', msq)';
+        SET vFileWriteOption='(txt, delimiter is '';'')';
+    END IF;
+End sub;
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('File module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('File module successfully loaded');
+END IF;
+

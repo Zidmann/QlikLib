@@ -1,0 +1,78 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Script      : console.qvs
+    Description : Module containing all the console printing functions
+    Version     : 1.0.0
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH CONSOLE
+// ----------------------------------------------------------------------------------------------------------------
+/*
+ * Description : Print a message one the batch console
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub console_print(vMsg)
+    LET vNow = Date(Now(), 'YYYY-MM-DD hh:mm:ss');
+    TRACE [$(vNow)]$(vMsg);
+End sub;
+
+/*
+ * Description : Print an information message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub console_info(vMsg)
+    call console_print('[i]' & '$(vMsg)');
+End sub;
+
+/*
+ * Description : Print a success message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub console_sucess(vMsg)
+    call console_print('[+]' & '$(vMsg)');
+End sub;
+
+/*
+ * Description : Print an error message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub console_error(vMsg)
+    call console_print('[-]' & '$(vMsg)');
+End sub;
+
+/*
+ * Description : Jump a line in the console
+ */
+Sub console_jumpline
+    TRACE;
+End sub;
+
+/*
+ * Description : Jump a line in the console
+ */
+Sub console_delimitation
+    IF (vLimitSize<>0) THEN
+        SET vLimitSize=50;
+        DO WHILE vLimitSize>0
+            LET vLimitText='$(vLimitText)' & '-';
+            LET vLimitSize=vLimitSize-1;
+        LOOP
+    END IF;
+    TRACE $(vLimitText);
+End sub;
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_info('Console module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('Console module successfully loaded');
+END IF;
+
