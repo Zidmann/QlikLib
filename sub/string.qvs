@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : string.qvs
     Description : Module containing all the string useful functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -25,8 +24,7 @@ SET string_main = Trim(Subfield(Subfield($1, '-', 1), '(', 1));
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('String module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('String module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('String module successfully loaded');
 END IF;
-

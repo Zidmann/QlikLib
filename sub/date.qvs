@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : date.qvs
     Description : Module containing all the date management functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -18,8 +17,7 @@ LET vErrorCount = $(ScriptErrorCount);
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('Date module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('Date module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('Date module successfully loaded');
 END IF;
-

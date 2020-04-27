@@ -1,10 +1,9 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : core.qvs
     Description : Main script to load all the different components of 
                   the custom Qlik library
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -21,4 +20,3 @@ $(Must_Include='$(vQliklibPath)\sub\log.qvs');
 $(Must_Include='$(vQliklibPath)\sub\date.qvs');
 $(Must_Include='$(vQliklibPath)\sub\string.qvs');
 call console_delimitation;
-

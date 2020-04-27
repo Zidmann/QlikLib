@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : console.qvs
     Description : Module containing all the console printing functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +52,7 @@ Sub console_jumpline
 End sub;
 
 /*
- * Description : Jump a line in the console
+ * Description : Printing a delimiter
  */
 Sub console_delimitation
     IF (vLimitSize<>0) THEN
@@ -71,8 +70,7 @@ End sub;
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('Console module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('Console module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('Console module successfully loaded');
 END IF;
-

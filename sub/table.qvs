@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : table.qvs
     Description : Module containing all the table management functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -59,7 +58,7 @@ End sub;
 Sub column_drop(vTableName, vColumnName)
     call column_exist(vTableName, vColumnName);
     IF (vReturn<>0) THEN
-        DROP FIELD $(vColumnName) $(vTableName);
+        DROP FIELD $(vColumnName) FROM $(vTableName);
     END IF;
 End sub;
 
@@ -90,47 +89,63 @@ End sub;
  *               vBufferName - Temporary table name
  *      Output : None
  */
-Sub table_file_write(vTableName, vFilePath, vAppend, vBufferName)
+Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
     SET vDefaultAppend=0;
-    SET vDefaultBufferName='tmpFileBuffer';
+    SET vDefaultBufferPath='./tmpBuffer.qvd';
 
     call variable_fill('vAppend', '$(vDefaultAppend)');
-    call variable_fill('vBufferName', '$(vDefaultBufferName)');
+    call variable_fill('vBufferPath', '$(vDefaultBufferPath)');
 
     call table_exist(vTableName);
     IF (vReturn<>0) THEN
-        call file_option(vFilePath);
-
         IF (vAppend<>0) THEN
-            table_rename(vTableName, vBufferName);
+            // Backup of the table content in an external file called buffer
+            call file_option(vBufferPath);
+            STORE $(vTableName) INTO $(vBufferPath) $(vFileWriteOption)
+            ;
+            call table_drop(vTableName);
 
-            // Load the current content in the buffer table
+            // Load the current content in the file in the table
+            call file_option(vFilePath);
             $(vTableName):
-            NoConcatenate:
+            NoConcatenate
             LOAD *
             FROM [$(vFilePath)] $(vFileReadOption)
             ;
 
-            // Add the new content in the buffer table
+            // Add the new content
+            call file_option(vBufferPath);
             $(vTableName):
-            Concatenate:
+            Concatenate
             LOAD *
-            RESIDENT $(vBufferName)
+            FROM [$(vBufferPath)] $(vFileReadOption)
             ;
         END IF;
 
+        // Writing the final content in the file
+        call file_option(vFilePath);
         STORE $(vTableName) INTO $(vFilePath) $(vFileWriteOption)
         ;
 
         IF (vAppend<>0) THEN
-            call table_rename(vBufferName, vTableName);
+            // Restoring the table as it was
+            call table_drop(vTableName);
+            call file_option(vBufferPath);
+            $(vTableName):
+            NoConcatenate
+            LOAD *
+            FROM [$(vBufferPath)] $(vFileReadOption)
+            ;
+            
+            //Deleting the buffer file - disable because require permissions
+//          call file_remove(vBufferPath);
         END IF;
     ELSE
         call console_info('No data to write');
     END IF;
 
     LET vAppend=vDefaultAppend;
-    LET vBufferName=vDefaultBufferName;
+    LET vBufferPath=vDefaultBufferPath;
 End  sub;
 
 /*
@@ -145,7 +160,6 @@ End  sub;
 Sub file_table_read(vFilePath, vTableName, vAppend)
     SET vDefaultAppend=1;
     call variable_fill('vAppend', '$(vDefaultAppend)');
-
     call file_exist(vFilePath);
     IF (vReturn<>0) THEN
         IF (vAppend=0) THEN
@@ -202,8 +216,7 @@ End sub;
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('Table module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('Table module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('Table module successfully loaded');
 END IF;
-

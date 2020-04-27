@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : file.qvs
     Description : Module containing all the file management functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -35,6 +34,13 @@ SET file_basename = Subfield('$1', '\', -1);
 SET file_extension = Trim(Subfield(Subfield('$1', '\', -1), '.', -1));
 
 /*
+ * Description : Extract the size of a file
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_size = FileSize('$1');;
+
+/*
  * Description : Get from the path of a file the option to use to load or store data
  *               The path doesn't require the file really exists
  *       Input : vFilePath      - Path of the file to watch
@@ -43,18 +49,41 @@ SET file_extension = Trim(Subfield(Subfield('$1', '\', -1), '.', -1));
  *               vFileWriteOption - Option to use to write in this file
  */
 Sub file_option(vFilePath, vWorksheetName)
-    LET vFileExt = $(file_extension($vFilePath));
-    call excel_worksheet_exist(vFilePath, vWorksheetName);
-
+    LET vFileExt = $(file_extension($(vFilePath)));
     IF (Upper(vFileExt)='QVD') THEN
         SET vFileReadOption='(QVD)';
         SET vFileWriteOption='(QVD)';
-    ELSEIF (vReturn<>0 AND (Upper(vFileExt)='XLS' OR Upper(vFileExt)='XLSX')) THEN
+    ELSEIF (Upper(vFileExt)='XLS' OR Upper(vFileExt)='XLSX') THEN
         SET vFileReadOption='(ooxml, embedded labels, table is $(vWorksheetName))';
-        SET vFileReadOption='(ooxml, embedded labels, table is $(vWorksheetName))';
+        SET vFileWriteOption='(ooxml, embedded labels, table is $(vWorksheetName))';
     ELSE
         SET vFileReadOption='(txt, utf8, embedded labels, delimiter is '';'', msq)';
         SET vFileWriteOption='(txt, delimiter is '';'')';
+    END IF;
+End sub;
+
+
+/*
+ * Description : Deleting a file
+ *               The path doesn't require the file really exists
+ *       Input : vFilePath - Path of the file to delete
+ *      Output : vReturn - 0 : the file existed and then was removed
+ *                         1 : the file doesn't exist
+ *                         2 : the file existed but can't be removed
+ */
+Sub file_remove(vFilePath)
+    call file_exist(vFilePath);
+    IF (vReturn<>0) THEN
+        IF 1=0 THEN
+            call console_error('File can not be removed');
+            vReturn=2;
+        ELSE
+            EXECUTE del "$(vFilePath)";
+            vReturn=0;
+        END IF;
+    ELSE
+        call console_info('No file to remove');
+        vReturn=1;
     END IF;
 End sub;
 
@@ -63,8 +92,7 @@ End sub;
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('File module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('File module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('File module successfully loaded');
 END IF;
-

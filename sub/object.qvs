@@ -1,9 +1,8 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
-    Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : object.qvs
     Description : Module containing all the basical object management functions
-    Version     : 1.0.0
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -128,8 +127,7 @@ End sub;
 // ----------------------------------------------------------------------------------------------------------------
 LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
 IF (vDiffErrorCount > 0) THEN
-    call console_info('Object module loaded with $(vDiffErrorCount) error(s)');
+    call console_error('Object module loaded with $(vDiffErrorCount) error(s)');
 ELSE
     call console_info('Object module successfully loaded');
 END IF;
-
