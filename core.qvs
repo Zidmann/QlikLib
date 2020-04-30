@@ -2,18 +2,38 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : core.qvs
+    Version     : 0.0.0
     Description : Main script to load all the different components of 
                   the custom Qlik library
  */
 // ----------------------------------------------------------------------------------------------------------------
 
+SET ThousandSep=' ';
+SET DecimalSep=',';
+SET MoneyThousandSep=' ';
+SET MoneyDecimalSep=',';
+SET MoneyFormat='# ##0,00 €;-# ##0,00 €';
+SET TimeFormat='hh:mm:ss';
+SET DateFormat='DD/MM/YYYY';
+SET TimestampFormat='DD/MM/YYYY hh:mm:ss[.fff]';
+SET FirstWeekDay=0;
+SET BrokenWeeks=0;
+SET ReferenceDay=4;
+SET FirstMonthOfYear=1;
+SET CollationLocale='fr-FR';
+SET MonthNames='janv.;févr.;mars;avr.;mai;juin;juil.;août;sept.;oct.;nov.;déc.';
+SET LongMonthNames='janvier;février;mars;avril;mai;juin;juillet;août;septembre;octobre;novembre;décembre';
+SET DayNames='lun.;mar.;mer.;jeu.;ven.;sam.;dim.';
+SET LongDayNames='lundi;mardi;mercredi;jeudi;vendredi;samedi;dimanche';
+
 // Keep reading the scripts even if some errors happen
 SET ErrorMode=0;
 
 // Load the different modules
-// WARNING - Put at first console and object modules
+// WARNING - Put at first console and object modules because other modules relie on them
 $(Must_Include='$(vQliklibPath)\sub\console.qvs');
 $(Must_Include='$(vQliklibPath)\sub\object.qvs');
+$(Must_Include='$(vQliklibPath)\sub\number.qvs');
 $(Must_Include='$(vQliklibPath)\sub\file.qvs');
 $(Must_Include='$(vQliklibPath)\sub\table.qvs');
 $(Must_Include='$(vQliklibPath)\sub\log.qvs');

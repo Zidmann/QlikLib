@@ -1,52 +1,52 @@
 // ----------------------------------------------------------------------------------------------------------------
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
-    Script      : date.qvs
+    Script      : number.qvs
     Version     : 0.0.0
-    Description : Module containing all the date management functions
+    Description : Module containing all the useful number functions
  */
 // ----------------------------------------------------------------------------------------------------------------
 
 LET vErrorCount = $(ScriptErrorCount);
 
 // ----------------------------------------------------------------------------------------------------------------
-// FUNCTIONS TO INTERACT WITH THE DATES
+// FUNCTIONS TO INTERACT WITH THE NUMBERS
 // ----------------------------------------------------------------------------------------------------------------
 
 /*
- * Description : Extract the directory of a file
- *       Input : $1 - Date to process
+ * Description : Return 0 if the number is positive or its value
+ *       Input : $1 - Number to process
  *      Output : None
  */
-SET date_year = YEAR($1);
+SET number_pos = IF($1>0, +$1, 0);
 
 /*
- * Description : 
- *       Input : $1 - Date to process
+ * Description : Return 0 if the number is negative or its value
+ *       Input : $1 - Number to process
  *      Output : None
  */
-SET date_month = RIGHT('0' & NUM(MONTH($1)), 2);
+SET number_neg = IF($1<0, -$1, 0);
 
 /*
- * Description : Extract the directory of a file
- *       Input : $1 - Date to process
+ * Description : Return which sign has a number (0 is considered as having no sign) 
+ *       Input : $1 - Number to process
  *      Output : None
  */
-SET date_day = RIGHT('0' & DAY($1), 2);
+SET number_sign = IF($1=0, '0', IF($1>0, '+', '-'));
 
 /*
- * Description : Extract the directory of a file
- *       Input : $1 - Date to process
+ * Description : Return the absolute value of a number
+ *       Input : $1 - Number to process
  *      Output : None
  */
-SET date_yearmonth = YEAR($1) & '-' & RIGHT('0' & NUM(MONTH($1)), 2);
+SET number_abs = FABS($1);
 
 /*
- * Description : Extract the directory of a file
- *       Input : $1 - Date to process
+ * Description : Return the order in the 10 base of a number
+ *       Input : $1 - Number to process
  *      Output : None
  */
-SET date_yearmonthday = YEAR($1) & '-' & RIGHT('0' & NUM(MONTH($1)), 2) & '-' & RIGHT('0' & DAY($1), 2);
+SET number_order = IF(FABS($1)>=10, FLOOR(LOG10(FABS($1))),0);
 
 // ----------------------------------------------------------------------------------------------------------------
 // PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS

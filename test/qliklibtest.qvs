@@ -2,6 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : qliklibtest.qvs
+    Version     : 0.0.0
     Description : Script to use the library functions to check everything still works
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -18,12 +19,21 @@ TRACE Test of console_jumpline; call console_jumpline;
 TRACE Test of console_delimitation; call console_delimitation;
 TRACE;
 
-TRACE == Testing the log functions ==;
-TRACE No function available yet;
+TRACE == Testing the basical object management functions ==;
+SET vMyVariable = OK;
+call variable_exist('vMyVariable'); TRACE Test of the function variable_exist : with vVariableName = 'vMyVariable'; TRACE => vReturn=$(vReturn);
+call variable_exist('vUndefined');  TRACE Test of the function variable_exist : with vVariableName = 'vUndefined';  TRACE => vReturn=$(vReturn);
+LET vPath = DocumentPath();                  call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
+LET vPath = 'notExistedPath/notExistedFile'; call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
 TRACE;
 
-TRACE == Testing the date management functions ==;
-TRACE No function available yet;
+TRACE == Testing the useful number functions ==;
+SET vMyNumber = 0;   LET vPos = $(number_pos($(vMyNumber))); LET vNeg = $(number_neg($(vMyNumber))); LET vSign = $(number_sign($(vMyNumber))); LET vAbs = $(number_abs($(vMyNumber))); LET vOrder = $(number_order($(vMyNumber)));
+TRACE Test of the maccros number_pos/number_neg/number_sign/number_abs/number_order with vMyNumber=$(vMyNumber) : vPos=$(vPos)/vNeg=$(vNeg)/vSign=$(vSign)/vAbs=$(vAbs)/vOrder=$(vOrder);
+SET vMyNumber = 152; LET vPos = $(number_pos($(vMyNumber))); LET vNeg = $(number_neg($(vMyNumber))); LET vSign = $(number_sign($(vMyNumber))); LET vAbs = $(number_abs($(vMyNumber))); LET vOrder = $(number_order($(vMyNumber)));
+TRACE Test of the maccros number_pos/number_neg/number_sign/number_abs/number_order with vMyNumber=$(vMyNumber) : vPos=$(vPos)/vNeg=$(vNeg)/vSign=$(vSign)/vAbs=$(vAbs)/vOrder=$(vOrder);
+SET vMyNumber = -99; LET vPos = $(number_pos($(vMyNumber))); LET vNeg = $(number_neg($(vMyNumber))); LET vSign = $(number_sign($(vMyNumber))); LET vAbs = $(number_abs($(vMyNumber))); LET vOrder = $(number_order($(vMyNumber)));
+TRACE Test of the maccros number_pos/number_neg/number_sign/number_abs/number_order with vMyNumber=$(vMyNumber) : vPos=$(vPos)/vNeg=$(vNeg)/vSign=$(vSign)/vAbs=$(vAbs)/vOrder=$(vOrder);
 TRACE;
 
 TRACE == Testing the file management functions ==;
@@ -67,13 +77,6 @@ TRACE Call of the function table_rename to rename the table;
 call table_rename('$(vTableNameToRename)',     '$(vTableNameDst)');
 TRACE;
 
-TRACE == Testing the basical object management functions ==;
-SET vMyVariable = OK;
-call variable_exist('vMyVariable'); TRACE Test of the function variable_exist : with vVariableName = 'vMyVariable'; TRACE => vReturn=$(vReturn);
-call variable_exist('vUndefined');  TRACE Test of the function variable_exist : with vVariableName = 'vUndefined';  TRACE => vReturn=$(vReturn);
-LET vPath = DocumentPath();                  call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
-LET vPath = 'notExistedPath/notExistedFile'; call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
-
 SET vVarToFill1 = PRINT-OK;
 call variable_fill('vVarToFill1', 'PRINT-KO');       TRACE Test of the function variable_fill; TRACE => vVarToFill1=$(vVarToFill1);
 call variable_fill('vVarToFill2', '$(vVarToFill1)'); TRACE Test of the function variable_fill; TRACE => vVarToFill2=$(vVarToFill2);
@@ -83,4 +86,21 @@ call column_exist('$(vTableNameToRename)', 'NOTEXIST');         TRACE Test of th
 call column_exist('$(vTableNameDst)',      '$(vColumnToDrop)'); TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = $(vColumnToDrop); TRACE => vReturn=$(vReturn);
 call column_exist('$(vTableNameDst)',      'COLUMN1');          TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = COLUMN1;          TRACE => vReturn=$(vReturn);
 //excel_worksheet_exist
+TRACE;
+
+TRACE == Testing the log functions ==;
+TRACE No function available yet;
+TRACE;
+
+TRACE == Testing the date management functions ==;
+LET vDate = '01/02/2020'; TRACE vDate=$(vDate);
+LET vYear = $(date_year('$(vDate)'));                 TRACE Test of the macro date_year :         vYear=$(vYear);
+LET vMonth = $(date_month('$(vDate)'));               TRACE Test of the macro date_month :        vMonth=$(vMonth);
+LET vDay = $(date_day('$(vDate)'));                   TRACE Test of the macro date_day :          vDay=$(vDay);
+LET vYearMonth = $(date_yearmonth('$(vDate)'));       TRACE Test of the macro date_yearmonth :    vYearMonth=$(vYearMonth);
+LET vYearMonthDay = $(date_yearmonthday('$(vDate)')); TRACE Test of the macro date_yearmonthday : vYearMonthDay=$(vYearMonthDay);
+TRACE;
+
+TRACE == Testing the string functions ==;
+TRACE No function available yet;
 TRACE;
