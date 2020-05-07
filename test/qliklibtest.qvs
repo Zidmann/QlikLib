@@ -75,6 +75,20 @@ TRACE Call of the function column_drop to remove on column;
 call column_drop('$(vTableNameToRename)',      '$(vColumnToDrop)');
 TRACE Call of the function table_rename to rename the table;
 call table_rename('$(vTableNameToRename)',     '$(vTableNameDst)');
+
+SET vFilePatternPath = ./data*.csv; SET vTableNameDst2  = myTableBis; 
+TRACE Call of the function file_table_multiple_read to read several files once;
+Sub file_auxi_load(vFilePath, vTableName, vPathInclude)
+    $(vTableName):
+    LOAD '$(vFilePath)' as [_vFilePath],
+         Trim(@1)       as [number_bis],
+         Trim(@2)       as [upper_bis],
+         Trim(@3)       as [lower_bis],
+         Trim(@4)       as [date_bis]
+    FROM ['$(vFilePath)'] (txt, codepage is 1252, no labels, delimiter is ';', msq, header is 2 lines)
+    ;
+End sub;
+call file_table_multiple_read('$(vFilePatternPath)', '$(vTableNameDst2)', 0);
 TRACE;
 
 SET vVarToFill1 = PRINT-OK;

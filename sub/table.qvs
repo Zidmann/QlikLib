@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : table.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Module containing all the table management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -151,30 +151,67 @@ End  sub;
 
 /*
  * Description : Load data from a file and put them in a table
- *       Input : vFilePath   - Path of the file to read to load data
- *               vTableName  - Name of the table where to write data
- *               vAppend     - Define if the table is overwritten or if the data are concatenated
- *                             0 : truncate mode
- *                             1 : concatenation mode (default)
+ *       Input : vFilePath    - Path of the file to read to load data
+ *               vTableName   - Name of the table where to write data
+ *               vAppend      - Define if the table is overwritten or if the data are concatenated
+ *                              0 : truncate mode
+ *                              1 : concatenation mode (default)
+ *               vPathInclude - Define if the path of the file must be included in the table (column _vFilePath)
+ *                              0 : do not print it
+ *                              1 : print it
  *      Output : None
  */
-Sub file_table_read(vFilePath, vTableName, vAppend)
+Sub file_table_read(vFilePath, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
+    SET vDefaultPathInclude=0;
     call variable_fill('vAppend', '$(vDefaultAppend)');
+    call variable_fill('vPathInclude', '$(vDefaultPathInclude)');
+
     call file_exist(vFilePath);
     IF (vReturn<>0) THEN
         IF (vAppend=0) THEN
             call table_drop(vTableName);
         END IF;
-
         call file_option(vFilePath);
-        call file_auxi_load;
+        call file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
 
     LET vAppend=vDefaultAppend;
+    LET vPathInclude=vDefaultPathInclude;
 End  sub;
+
+/*
+ * Description : Load data from one or several files and put them in a table
+ *       Input : vFilePatternPath - Pattern of the path of the file(s) to read
+ *               vTableName       - Name of the table where to write data
+ *               vAppend          - Define if the table is overwritten or if the data are concatenated
+ *                                  0 : truncate mode
+ *                                  1 : concatenation mode (default)
+ *      Output : None
+ */
+Sub file_table_multiple_read(vFilePatternPath, vTableName, vAppend)
+    SET vDefaultAppend=1;
+    call variable_fill('vAppend', '$(vDefaultAppend)');
+
+    SET vFlag = 0;
+    FOR EACH vFilePath in FileList('$(vFilePatternPath)')
+        SET vPathInclude = 1;
+        IF (vAppend=0 AND vFlag=0) THEN
+            call file_table_read(vFilePath, vTableName, vAppend, vPathInclude);
+        ELSE
+            call file_table_read(vFilePath, vTableName, 1, vPathInclude);
+        END IF;
+        vFlag=1;
+    NEXT vFilePath;
+
+    IF (vFlag=0) THEN
+        call console_info('No file to read');
+    END IF;
+
+    LET vAppend=vDefaultAppend;
+End sub; 
 
 /*
  * Description : Load data from an excel document and put them in a table
@@ -182,13 +219,18 @@ End  sub;
  *               vWorksheetName - Name of a worksheet
  *               vTableName     - Name of the table where to write data
  *               vAppend        - Define if the table is overwritten or if the data are concatenated
- *                             0 : truncate mode
- *                             1 : concatenation mode (default)
+ *                               0 : truncate mode
+ *                               1 : concatenation mode (default)
+ *               vPathInclude   - Define if the path of the file must be included in the table (column _vFilePath)
+ *                               0 : do not print it
+ *                               1 : print it
  *      Output : None
  */
-Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend)
+Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
+    SET vDefaultPathInclude=0;
     call variable_fill('vAppend', '$(vDefaultAppend)');
+    call variable_fill('vPathInclude', '$(vDefaultPathInclude)');
 
     call excel_worksheet_exist(vFilePath, vWorksheetName);
     IF (vReturn<>0) THEN
@@ -197,17 +239,32 @@ Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend)
         END IF;
 
         call file_option(vFilePath, vWorksheetName);
-        call file_auxi_load;
+        call file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
 
     LET vAppend=vDefaultAppend;
+    LET vPathInclude=vDefaultPathInclude;
 End sub;
 
-Sub file_auxi_load
+Sub file_auxi_load(vFilePath, vTableName, vPathInclude)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        SET vLoadMode = Concatenate;
+    ELSE
+        SET vLoadMode = NoConcatenate;
+    END IF;
+
+    IF (vPathInclude <> 0) THEN
+        LET vSelectClause = '''$(vFilePath)'' as [_vFilePath], *';
+    ELSE
+        SET vSelectClause = *;
+    END IF;
+
     $(vTableName):
-    LOAD *
+    $(vLoadMode)
+    LOAD $(vSelectClause)
     FROM ['$(vFilePath)'] $(vFileReadOption)
     ;
 End sub;

@@ -1,0 +1,15 @@
+These first two lines will not be processed thanks to 'header is 2 lines'
+option in the LOAD request.
+-7;G;g;11/03/2021;
+8;H;h;12/04/2021;
+-9;I;i;10/01/2022;
+10;J;j;11/02/2022;
+11;K;k;11/03/2022;
+-12;L;l;12/04/2022;
+13;M;m;12/01/2023;
+-14;N;n;12/02/2023;
+15;O;o;12/03/2023;
+-16;P;p;12/01/2024;
+17;Q;q;12/01/2025;
+-18;R;r;12/03/2027;
+19;S;s;12/01/2021;
