@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : file.qvs
-    Version     : 0.1.0
+    Version     : 0.1.1
     Description : Module containing all the file management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -18,49 +18,49 @@ LET vErrorCount = $(ScriptErrorCount);
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_dirname = Left('$1', Index('$1', '\', -1));
+SET file_dirname = Left($1, Index($1, '\', -1));
 
 /*
  * Description : Extract the basename of a file
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_basename = Subfield('$1', '\', -1);
+SET file_basename = Subfield($1, '\', -1);
 
 /*
  * Description : Extract the extension of a file
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_extension = Trim(Subfield(Subfield('$1', '\', -1), '.', -1));
+SET file_extension = IF(Index(Subfield($1, '\', -1), '.', -1)>0, Trim(Subfield(Subfield($1, '\', -1), '.', -1)), '');
 
 /*
  * Description : Extract the directory of a file in the case of a Unix path
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_dirname_unix = Left('$1', Index('$1', '/', -1));
+SET file_dirname_unix = Left($1, Index($1, '/', -1));
 
 /*
  * Description : Extract the basename of a file in the case of a Unix path
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_basename_unix = Subfield('$1', '/', -1);
+SET file_basename_unix = Subfield($1, '/', -1);
 
 /*
  * Description : Extract the extension of a file in the case of a Unix path
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_extension_unix = Trim(Subfield(Subfield('$1', '/', -1), '.', -1));
+SET file_extension_unix = IF(Index(Subfield($1, '/', -1), '.', -1)>0, Trim(Subfield(Subfield($1, '/', -1), '.', -1)), '');
 
 /*
  * Description : Extract the size of a file
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_size = FileSize('$1');;
+SET file_size = FileSize($1);
 
 /*
  * Description : Get from the path of a file the option to use to load or store data
@@ -71,7 +71,7 @@ SET file_size = FileSize('$1');;
  *               vFileWriteOption - Option to use to write in this file
  */
 Sub file_option(vFilePath, vWorksheetName)
-    LET vFileExt = $(file_extension($(vFilePath)));
+    LET vFileExt = $(file_extension(vFilePath));
     IF (Upper(vFileExt)='QVD') THEN
         SET vFileReadOption='(QVD)';
         SET vFileWriteOption='(QVD)';
