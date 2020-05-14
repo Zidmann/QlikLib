@@ -43,13 +43,19 @@ LET vBasename = $(file_basename($(vPath)));       TRACE Test of the macro file_b
 LET vFileExtension = $(file_extension($(vPath))); TRACE Test of the macro file_extension : vFileExtension=$(vFileExtension);
 TRACE;
 
+SET vUnixPath = /home/user/directory/file.extension;       TRACE vUnixPath=$(vUnixPath);
+LET vDirname = $(file_dirname_unix($(vUnixPath)));         TRACE Test of the macro file_dirname_unix : vDirname=$(vDirname);
+LET vBasename = $(file_basename_unix($(vUnixPath)));       TRACE Test of the macro file_basename_unix : vBasename=$(vBasename);
+LET vFileExtension = $(file_extension_unix($(vUnixPath))); TRACE Test of the macro file_extension_unix : vFileExtension=$(vFileExtension);
+TRACE;
+
 LET vPath = DocumentPath(); TRACE vPath=$(vPath);
 LET vFileSize = $(file_size($(vPath))); TRACE Test of the macro file_size : vFileSize=$(vFileSize);
 TRACE;
 
-SET vCsvPath = C:\dir1\dir2\dir3\File.Csv;
-SET vXlsPath = C:\dir1\dir2\dir3\File.xLs; SET vXlsSheet = Sheet1;
-SET vQvdPath = C:\dir1\dir2\dir3\File.qvD;
+SET vCsvPath  = C:\dir1\dir2\dir3\File.Csv;
+SET vXlsPath  = C:\dir1\dir2\dir3\File.xLs; SET vXlsSheet = Sheet1;
+SET vQvdPath  = C:\dir1\dir2\dir3\File.qvD;
 call file_option('$(vCsvPath)');                 TRACE Test of the macro file_option with : vCsvPath=$(vCsvPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
 call file_option('$(vXlsPath)', '$(vXlsSheet)'); TRACE Test of the macro file_option with : vXlsPath=$(vXlsPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
 call file_option('$(vQvdPath)');                 TRACE Test of the macro file_option with : vQvdPath=$(vQvdPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);

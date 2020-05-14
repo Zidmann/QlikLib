@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : file.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Module containing all the file management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -33,6 +33,27 @@ SET file_basename = Subfield('$1', '\', -1);
  *      Output : None
  */
 SET file_extension = Trim(Subfield(Subfield('$1', '\', -1), '.', -1));
+
+/*
+ * Description : Extract the directory of a file in the case of a Unix path
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_dirname_unix = Left('$1', Index('$1', '/', -1));
+
+/*
+ * Description : Extract the basename of a file in the case of a Unix path
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_basename_unix = Subfield('$1', '/', -1);
+
+/*
+ * Description : Extract the extension of a file in the case of a Unix path
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_extension_unix = Trim(Subfield(Subfield('$1', '/', -1), '.', -1));
 
 /*
  * Description : Extract the size of a file
