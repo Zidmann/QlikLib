@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : table.qvs
-    Version     : 0.1.0
+    Version     : 0.2.0
     Description : Module containing all the table management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -94,8 +94,8 @@ Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
     SET vDefaultAppend=0;
     SET vDefaultBufferPath='./tmpBuffer.qvd';
 
-    call variable_fill('vAppend', '$(vDefaultAppend)');
-    call variable_fill('vBufferPath', '$(vDefaultBufferPath)');
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vBufferPath', vDefaultBufferPath);
 
     call table_exist(vTableName);
     IF (vReturn<>0) THEN
@@ -164,8 +164,8 @@ End  sub;
 Sub file_table_read(vFilePath, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
     SET vDefaultPathInclude=0;
-    call variable_fill('vAppend', '$(vDefaultAppend)');
-    call variable_fill('vPathInclude', '$(vDefaultPathInclude)');
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vPathInclude', vDefaultPathInclude);
 
     call file_exist(vFilePath);
     IF (vReturn<>0) THEN
@@ -193,10 +193,10 @@ End  sub;
  */
 Sub file_table_multiple_read(vFilePatternPath, vTableName, vAppend)
     SET vDefaultAppend=1;
-    call variable_fill('vAppend', '$(vDefaultAppend)');
+    call variable_fill('vAppend', vDefaultAppend);
 
     SET vFlag = 0;
-    FOR EACH vFilePath in FileList('$(vFilePatternPath)')
+    FOR EACH vFilePath in FileList(vFilePatternPath)
         SET vPathInclude = 1;
         IF (vAppend=0 AND vFlag=0) THEN
             call file_table_read(vFilePath, vTableName, vAppend, vPathInclude);
@@ -229,8 +229,8 @@ End sub;
 Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
     SET vDefaultPathInclude=0;
-    call variable_fill('vAppend', '$(vDefaultAppend)');
-    call variable_fill('vPathInclude', '$(vDefaultPathInclude)');
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vPathInclude', vDefaultPathInclude);
 
     call excel_worksheet_exist(vFilePath, vWorksheetName);
     IF (vReturn<>0) THEN

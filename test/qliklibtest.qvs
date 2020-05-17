@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : qliklibtest.qvs
-    Version     : 0.0.1
+    Version     : 0.2.0
     Description : Script to use the library functions to check everything still works
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ call console_print('Test of the function console_print');
 call console_info('Test of the function console_info');
 call console_sucess('Test of the function console_sucess');
 call console_error('Test of the function console_error');
-TRACE Test of console_jumpline; call console_jumpline;
+TRACE Test of console_jumpline;     call console_jumpline;
 TRACE Test of console_delimitation; call console_delimitation;
 TRACE;
 
@@ -23,8 +23,8 @@ TRACE == Testing the basical object management functions ==;
 SET vMyVariable = OK;
 call variable_exist('vMyVariable'); TRACE Test of the function variable_exist : with vVariableName = 'vMyVariable'; TRACE => vReturn=$(vReturn);
 call variable_exist('vUndefined');  TRACE Test of the function variable_exist : with vVariableName = 'vUndefined';  TRACE => vReturn=$(vReturn);
-LET vPath = DocumentPath();                  call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
-LET vPath = 'notExistedPath/notExistedFile'; call file_exist('$(vPath)'); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
+LET vPath = DocumentPath();                  call file_exist(vPath); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
+LET vPath = 'notExistedPath/notExistedFile'; call file_exist(vPath); TRACE Test of the function file_exist : with vPath = $(vPath); TRACE => vReturn=$(vReturn);
 TRACE;
 
 TRACE == Testing the useful number functions ==;
@@ -56,9 +56,9 @@ TRACE;
 SET vCsvPath  = C:\dir1\dir2\dir3\File.Csv;
 SET vXlsPath  = C:\dir1\dir2\dir3\File.xLs; SET vXlsSheet = Sheet1;
 SET vQvdPath  = C:\dir1\dir2\dir3\File.qvD;
-call file_option('$(vCsvPath)');                 TRACE Test of the function file_option with : vCsvPath=$(vCsvPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
-call file_option('$(vXlsPath)', '$(vXlsSheet)'); TRACE Test of the function file_option with : vXlsPath=$(vXlsPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
-call file_option('$(vQvdPath)');                 TRACE Test of the function file_option with : vQvdPath=$(vQvdPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
+call file_option(vCsvPath);            TRACE Test of the function file_option with : vCsvPath=$(vCsvPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
+call file_option(vXlsPath, vXlsSheet); TRACE Test of the function file_option with : vXlsPath=$(vXlsPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
+call file_option(vQvdPath);            TRACE Test of the function file_option with : vQvdPath=$(vQvdPath); TRACE => vFileReadOption=$(vFileReadOption); TRACE => vFileWriteOption=$(vFileWriteOption);
 TRACE;
 
 TRACE == Testing the table management functions ==;
@@ -66,21 +66,21 @@ SET vFilePathSrc = ./exempleSrc.txt; SET vFilePathTmp = ./exempleTmp.txt; SET vF
 SET vTableNameToRename  = myTableToRename; SET vTableNameTmp = myTableToDrop; SET vTableNameDst  = myTable; 
 SET vColumnToDrop = COLUMN4;
 TRACE Call of the function file_table_read for the first time to load the content in the temporary table;
-call file_table_read('$(vFilePathSrc)',   '$(vTableNameTmp)');
+call file_table_read(vFilePathSrc,   vTableNameTmp);
 TRACE Call of the function file_table_read for the second time to have twice data (with append mode);
-call file_table_read('$(vFilePathSrc)',   '$(vTableNameTmp)', 1);
+call file_table_read(vFilePathSrc,   vTableNameTmp, 1);
 TRACE Call of the function table_file_write for the first time to copy these data in a temporary time;
-call table_file_write('$(vTableNameTmp)', '$(vFilePathTmp)');
+call table_file_write(vTableNameTmp, vFilePathTmp);
 TRACE Call of the function table_file_write for the second time to copy again these data in a temporary time (data are duplicated 4 times);
-call table_file_write('$(vTableNameTmp)', '$(vFilePathTmp)', 1);
+call table_file_write(vTableNameTmp, vFilePathTmp, 1);
 TRACE Call of the function table_drop to clean the temporary table;
-call table_drop('$(vTableNameTmp)');
+call table_drop(vTableNameTmp);
 TRACE Call of the function file_table_read to read the previous written file in the table which will be renamed later;
-call file_table_read('$(vFilePathTmp)',  '$(vTableNameToRename)');
+call file_table_read(vFilePathTmp,  vTableNameToRename);
 TRACE Call of the function column_drop to remove on column;
-call column_drop('$(vTableNameToRename)',      '$(vColumnToDrop)');
+call column_drop(vTableNameToRename,      vColumnToDrop);
 TRACE Call of the function table_rename to rename the table;
-call table_rename('$(vTableNameToRename)',     '$(vTableNameDst)');
+call table_rename(vTableNameToRename,     vTableNameDst);
 
 SET vFilePatternPath = ./data*.csv; SET vTableNameDst2  = myTableBis; 
 TRACE Call of the function file_table_multiple_read to read several files once;
@@ -94,17 +94,17 @@ Sub file_auxi_load(vFilePath, vTableName, vPathInclude)
     FROM ['$(vFilePath)'] (txt, codepage is 1252, no labels, delimiter is ';', msq, header is 2 lines)
     ;
 End sub;
-call file_table_multiple_read('$(vFilePatternPath)', '$(vTableNameDst2)', 0);
+call file_table_multiple_read(vFilePatternPath, vTableNameDst2, 0);
 TRACE;
 
 SET vVarToFill1 = PRINT-OK;
-call variable_fill('vVarToFill1', 'PRINT-KO');       TRACE Test of the function variable_fill; TRACE => vVarToFill1=$(vVarToFill1);
-call variable_fill('vVarToFill2', '$(vVarToFill1)'); TRACE Test of the function variable_fill; TRACE => vVarToFill2=$(vVarToFill2);
-call table_exist('$(vTableNameToRename)'); TRACE Test of the function table_exist : with vTableName = $(vTableNameToRename); TRACE => vReturn=$(vReturn);
-call table_exist('$(vTableNameDst)');      TRACE Test of the function table_exist : with vTableName = $(vTableNameDst);      TRACE => vReturn=$(vReturn);
-call column_exist('$(vTableNameToRename)', 'NOTEXIST');         TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = NOTEXIST;         TRACE => vReturn=$(vReturn);
-call column_exist('$(vTableNameDst)',      '$(vColumnToDrop)'); TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = $(vColumnToDrop); TRACE => vReturn=$(vReturn);
-call column_exist('$(vTableNameDst)',      'COLUMN1');          TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = COLUMN1;          TRACE => vReturn=$(vReturn);
+call variable_fill('vVarToFill1', 'PRINT-KO');        TRACE Test of the function variable_fill; TRACE => vVarToFill1=$(vVarToFill1);
+call variable_fill('vVarToFill2', vVarToFill1);       TRACE Test of the function variable_fill; TRACE => vVarToFill2=$(vVarToFill2);
+call table_exist(vTableNameToRename);                 TRACE Test of the function table_exist : with vTableName = $(vTableNameToRename); TRACE => vReturn=$(vReturn);
+call table_exist(vTableNameDst);                      TRACE Test of the function table_exist : with vTableName = $(vTableNameDst);      TRACE => vReturn=$(vReturn);
+call column_exist(vTableNameToRename, 'NOTEXIST');    TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = NOTEXIST;         TRACE => vReturn=$(vReturn);
+call column_exist(vTableNameDst,      vColumnToDrop); TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = $(vColumnToDrop); TRACE => vReturn=$(vReturn);
+call column_exist(vTableNameDst,      'COLUMN1');     TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = COLUMN1;          TRACE => vReturn=$(vReturn);
 //excel_worksheet_exist
 TRACE;
 
@@ -114,11 +114,11 @@ TRACE;
 
 TRACE == Testing the date management functions ==;
 LET vDate = '01/02/2020'; TRACE vDate=$(vDate);
-LET vYear = $(date_year('$(vDate)'));                 TRACE Test of the macro date_year :         vYear=$(vYear);
-LET vMonth = $(date_month('$(vDate)'));               TRACE Test of the macro date_month :        vMonth=$(vMonth);
-LET vDay = $(date_day('$(vDate)'));                   TRACE Test of the macro date_day :          vDay=$(vDay);
-LET vYearMonth = $(date_yearmonth('$(vDate)'));       TRACE Test of the macro date_yearmonth :    vYearMonth=$(vYearMonth);
-LET vYearMonthDay = $(date_yearmonthday('$(vDate)')); TRACE Test of the macro date_yearmonthday : vYearMonthDay=$(vYearMonthDay);
+LET vYear = $(date_year(vDate));                 TRACE Test of the macro date_year :         vYear=$(vYear);
+LET vMonth = $(date_month(vDate));               TRACE Test of the macro date_month :        vMonth=$(vMonth);
+LET vDay = $(date_day(vDate));                   TRACE Test of the macro date_day :          vDay=$(vDay);
+LET vYearMonth = $(date_yearmonth(vDate));       TRACE Test of the macro date_yearmonth :    vYearMonth=$(vYearMonth);
+LET vYearMonthDay = $(date_yearmonthday(vDate)); TRACE Test of the macro date_yearmonthday : vYearMonthDay=$(vYearMonthDay);
 TRACE;
 
 TRACE == Testing the string functions ==;
