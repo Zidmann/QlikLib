@@ -14,6 +14,15 @@ SET vQliklibPath='<directory>\QlikLib';
 $(Must_Include='$(vQliklibPath)\core.qvs');
 ```
 
+## Tests
+The tests are launched in test/qliklibtest.qvw Qlik file which will load data from different sources (data1.csv, data2.csv, exempleSrc.txt).
+Some functions have not been implemented yet in the tests :
+- excel_worksheet_exist
+- file_remove
+- column_rename
+- file_excel_sheet
+- string_main
+
 ## Implemented functions
 
 * console.qvs - Module containing all the console printing functions
