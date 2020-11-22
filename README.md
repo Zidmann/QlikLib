@@ -16,6 +16,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 
 ## Implemented functions
 
+### console.qvs - Module containing all the console printing functions
 | Name | Description |
 | ---- | ---- |
 | console_print | Print a message one the batch console |
