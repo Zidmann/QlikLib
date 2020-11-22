@@ -92,6 +92,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 
 
 * string.qvs - Module containing all the string useful functions
+
 | Name | Description |
 | ---- | ---- |
 | string_main | Extract the main content of a string |
