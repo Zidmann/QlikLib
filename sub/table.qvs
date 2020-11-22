@@ -30,7 +30,7 @@ End sub;
  *               If the destination table already exists the table is overwritten
  *       Input : vTableNameSrc - Source table
  *               vTableNameDst - Destination table
- *      Output : vReturn - 0 : nothind done since the table doesn't exist
+ *      Output : vReturn - 0 : nothing done since the table doesn't exist
  *                         1 : the table was simply renamed
  *                         2 : the table was renamed after dropping the previous table
  */
@@ -63,6 +63,17 @@ Sub column_drop(vTableName, vColumnName)
     END IF;
 End sub;
 
+
+/*
+ * Description : Renaming a column in a table
+ *               If the destination column already exists the column is overwritten
+ *       Input : vTableName     - Name of the table where to make changes in the columns
+ *               vColumnNameSrc - Source column
+ *               vColumnNameDst - Destination column
+ *      Output : vReturn - 0 : nothing done since the column doesn't exist in this table
+ *                         1 : the column was simply renamed
+ *                         2 : the column was renamed after dropping the previous column
+ */
 Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
     call column_exist(vTableName, vColumnNameSrc);
     IF (vReturn = 0) THEN
@@ -78,7 +89,6 @@ Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
         RENAME FIELD $(vColumnNameSrc) TO $(vColumnNameDst);
     END IF;
 End sub;
-
 
 /*
  * Description : Write data from a table into a file 
