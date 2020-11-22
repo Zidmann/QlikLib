@@ -16,7 +16,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 
 ## Implemented functions
 
-### console.qvs - Module containing all the console printing functions
+### console.qvs : Module containing all the console printing functions
 | Name | Description |
 | ---- | ---- |
 | console_print | Print a message one the batch console |
@@ -27,6 +27,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | console_delimitation | Printing a delimiter |
 
 
+### object.qvs : Module containing all the basical object management functions
 | Name | Description |
 | ---- | ---- |
 | variable_exist | Check if a variable is defined in Qlik |
@@ -37,6 +38,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | variable_fill | Set a default value to a variable in the case it is not defined |
 
 
+### number.qvs : Module containing all the useful number functions
 | Name | Description |
 | ---- | ---- |
 | number_pos | Return 0 if the number is positive or its value |
@@ -46,6 +48,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | number_order | Return the order in the 10 base of a number |
 
 
+### file.qvs : Module containing all the file management functions
 | Name | Description |
 | ---- | ---- |
 | file_dirname | Extract the directory of a file |
@@ -59,6 +62,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | file_remove | Deleting a file |
 
 
+### table.qvs : Module containing all the table management functions
 | Name | Description |
 | ---- | ---- |
 | table_drop | Dropping a table after checking it exists (to avoid any error) |
@@ -71,6 +75,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | file_excel_sheet | Load data from an excel document and put them in a table |
 
 
+### date.qvs : Module containing all the date management functions
 | Name | Description |
 | ---- | ---- |
 | date_year |  |
@@ -80,6 +85,7 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | date_yearmonthday |  |
 
 
+### string.qvs : Module containing all the string useful functions
 | Name | Description |
 | ---- | ---- |
 | string_main | Extract the main content of a string |
