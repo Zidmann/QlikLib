@@ -78,11 +78,11 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 ### date.qvs : Module containing all the date management functions
 | Name | Description |
 | ---- | ---- |
-| date_year |  |
-| date_month |  |
-| date_day |  |
-| date_yearmonth |  |
-| date_yearmonthday |  |
+| date_year | Extract the year from a date |
+| date_month | Extract the month from a date |
+| date_day | Extract the day from a date |
+| date_yearmonth | Extract the year and the month set to the YYYY-MM pattern from a date |
+| date_yearmonthday | Extract the year and the month set to the YYYY-MM-DD pattern from a date |
 
 
 ### string.qvs : Module containing all the string useful functions
