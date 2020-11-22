@@ -24,3 +24,14 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | console_error | Print an error message in the specific format |
 | console_jumpline | Jump a line in the console |
 | console_delimitation | Printing a delimiter |
+
+
+| Name | Description |
+| ---- | ---- |
+| variable_exist | Check if a variable is defined in Qlik |
+| file_exist | Check if a file exists at a specific path |
+| table_exist | Check if a table exists |
+| excel_worksheet_exist | Check if a worksheet exists in an Excel document |
+| column_exist | Check if a column exists in a specific table |
+| variable_fill | Set a default value to a variable in the case it is not defined |
+
