@@ -68,3 +68,17 @@ $(Must_Include='$(vQliklibPath)\core.qvs');
 | file_table_read | Load data from a file and put them in a table |
 | file_table_multiple_read | Load data from one or several files and put them in a table |
 | file_excel_sheet | Load data from an excel document and put them in a table |
+
+
+| Name | Description |
+| ---- | ---- |
+| date_year |  |
+| date_month |  |
+| date_day |  |
+| date_yearmonth |  |
+| date_yearmonthday |  |
+
+
+| Name | Description |
+| ---- | ---- |
+| string_main | Extract the main content of a string |
