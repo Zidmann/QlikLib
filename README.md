@@ -82,7 +82,7 @@ Some functions have not been implemented yet in the tests :
 | table_drop | Dropping a table after checking it exists (to avoid any error) |
 | table_rename | Renaming a table |
 | column_drop | Dropping a column in a table after checking both exist (to avoid any error) |
-| column_rename |  |
+| column_rename | Renaming a column in a table |
 | table_file_write | Write data from a table into a file  |
 | file_table_read | Load data from a file and put them in a table |
 | file_table_multiple_read | Load data from one or several files and put them in a table |
