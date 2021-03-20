@@ -5,7 +5,6 @@ By [Zidmann](mailto:emmanuel.zidel@gmail.com) :bow:
 Simple library of functions to use with Qlik project
 
 ## How to use
-
 In the QVW document, add these lines with vQliklibPath containing the path of the QlikLib library.
 
 ```bash
@@ -29,7 +28,7 @@ Some functions have not been implemented yet in the tests :
 
 | Name | Description |
 | ---- | ---- |
-| console_print | Print a message one the batch console |
+| console_print | Print a message on the batch console |
 | console_info | Print an information message in the specific format |
 | console_sucess | Print a success message in the specific format |
 | console_error | Print an error message in the specific format |
@@ -37,7 +36,7 @@ Some functions have not been implemented yet in the tests :
 | console_delimitation | Printing a delimiter |
 
 
-* object.qvs - Module containing all the basical object management functions
+* object.qvs - Module containing all the basic object management functions
 
 | Name | Description |
 | ---- | ---- |
@@ -83,7 +82,7 @@ Some functions have not been implemented yet in the tests :
 | table_rename | Renaming a table |
 | column_drop | Dropping a column in a table after checking both exist (to avoid any error) |
 | column_rename | Renaming a column in a table |
-| table_file_write | Write data from a table into a file  |
+| table_file_write | Write data from a table into a file |
 | file_table_read | Load data from a file and put them in a table |
 | file_table_multiple_read | Load data from one or several files and put them in a table |
 | file_excel_sheet | Load data from an excel document and put them in a table |

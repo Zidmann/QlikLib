@@ -91,7 +91,7 @@ Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
 End sub;
 
 /*
- * Description : Write data from a table into a file 
+ * Description : Write data from a table into a file
  *       Input : vTableName  - Name of the table to write
  *               vFilePath   - Path of the file where to write data
  *               vAppend     - Define if the file is overwritten or if the data are concatenated

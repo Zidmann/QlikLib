@@ -30,7 +30,7 @@ SET LongDayNames='lundi;mardi;mercredi;jeudi;vendredi;samedi;dimanche';
 SET ErrorMode=0;
 
 // Load the different modules
-// WARNING - Put at first console and object modules because other modules relie on them
+// WARNING - Put at first console and object modules because other modules rely on them
 $(Must_Include='$(vQliklibPath)\sub\console.qvs');
 $(Must_Include='$(vQliklibPath)\sub\object.qvs');
 $(Must_Include='$(vQliklibPath)\sub\number.qvs');

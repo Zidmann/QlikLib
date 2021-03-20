@@ -13,7 +13,7 @@ LET vErrorCount = $(ScriptErrorCount);
 // FUNCTIONS TO INTERACT WITH CONSOLE
 // ----------------------------------------------------------------------------------------------------------------
 /*
- * Description : Print a message one the batch console
+ * Description : Print a message on the batch console
  *       Input : vMsg - The message to write in the screen
  */
 Sub console_print(vMsg)
