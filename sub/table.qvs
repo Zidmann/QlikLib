@@ -127,7 +127,6 @@ End sub;
  */
 Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
     call column_exist(vTableName, vColumnNameSrc);
-TRACE EZL  vReturn=$(vReturn);
     IF (vReturn=0) THEN
         vReturn=0;
     ELSE
