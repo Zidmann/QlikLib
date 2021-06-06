@@ -1,0 +1,4 @@
+# No temporary files created by the tests
+test/exempleTmp.txt
+test/log.txt
+test/tmpBuffer.qvd

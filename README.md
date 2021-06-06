@@ -18,9 +18,10 @@ The tests are launched in test/qliklibtest.qvw Qlik file which will load data fr
 Some functions have not been implemented yet in the tests :
 - excel_worksheet_exist
 - file_remove
-- column_rename
 - file_excel_sheet
 - string_main
+- table_isempty
+- table_truncate
 
 ## Implemented functions
 
@@ -34,6 +35,16 @@ Some functions have not been implemented yet in the tests :
 | console_error | Print an error message in the specific format |
 | console_jumpline | Jump a line in the console |
 | console_delimitation | Printing a delimiter |
+
+* log.qvs - Module containing all the log functions
+
+| Name | Description |
+| ---- | ---- |
+| log_persist | Write in a file the content of the table dedicated to the log then purge the table |
+| log_print | Log a message in the dedicated table and print it on the screen |
+| log_info | Log an information message in the specific format |
+| log_sucess | Log a success message in the specific format |
+| log_error | Log an error message in the specific format |
 
 
 * object.qvs - Module containing all the basic object management functions
@@ -81,6 +92,8 @@ Some functions have not been implemented yet in the tests :
 | table_drop | Dropping a table after checking it exists (to avoid any error) |
 | table_rename | Renaming a table |
 | column_drop | Dropping a column in a table after checking both exist (to avoid any error) |
+| table_isempty | Checking if a table contains line or is empty |
+| table_truncate | Recreating an empty table after checking it exists and contains data (to avoid any error) |
 | column_rename | Renaming a column in a table |
 | table_file_write | Write data from a table into a file |
 | file_table_read | Load data from a file and put them in a table |

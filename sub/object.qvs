@@ -45,7 +45,7 @@ End sub;
  *                         1 : it exists
  */
 Sub table_exist(vTableName)
-    IF (Len(TableNumber('$(vTableName)'))>0) THEN
+    IF (Len(TableNumber(vTableName))>0) THEN
         vReturn=1;
     ELSE
         vReturn=0;

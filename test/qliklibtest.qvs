@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : qliklibtest.qvs
-    Version     : 0.2.0
+    Version     : 0.3.0
     Description : Script to use the library functions to check everything still works
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -65,6 +65,8 @@ TRACE == Testing the table management functions ==;
 SET vFilePathSrc = ./exempleSrc.txt; SET vFilePathTmp = ./exempleTmp.txt; SET vFilePathDst = ./exempleDest.csv;
 SET vTableNameToRename  = myTableToRename; SET vTableNameTmp = myTableToDrop; SET vTableNameDst  = myTable; 
 SET vColumnToDrop = COLUMN4;
+SET vColumnToRenameSrc = COLUMN3;
+SET vColumnToRenameDst = COLUMN_RENAMED;
 TRACE Call of the function file_table_read for the first time to load the content in the temporary table;
 call file_table_read(vFilePathSrc,   vTableNameTmp);
 TRACE Call of the function file_table_read for the second time to have twice data (with append mode);
@@ -81,6 +83,8 @@ TRACE Call of the function column_drop to remove on column;
 call column_drop(vTableNameToRename,      vColumnToDrop);
 TRACE Call of the function table_rename to rename the table;
 call table_rename(vTableNameToRename,     vTableNameDst);
+TRACE Call of the function column_rename to rename the column;
+call column_rename(vTableNameDst, vColumnToRenameSrc, vColumnToRenameDst);
 
 SET vFilePatternPath = ./data*.csv; SET vTableNameDst2  = myTableBis; 
 TRACE Call of the function file_table_multiple_read to read several files once;
@@ -109,7 +113,15 @@ call column_exist(vTableNameDst,      'COLUMN1');     TRACE Test of the function
 TRACE;
 
 TRACE == Testing the log functions ==;
-TRACE No function available yet;
+SET vLogPath = './log.txt';
+call log_print('Test of the function log_print', 'LEVEL');
+call log_info('Test of the function log_info');
+call log_sucess('Test of the function log_sucess');
+call log_error('Test of the function log_error');
+call log_persist(vLogPath);
+call log_info('New test of the function log_info');
+call log_sucess('New test of the function log_sucess');
+call log_error('New test of the function log_error');
 TRACE;
 
 TRACE == Testing the date management functions ==;

@@ -26,6 +26,58 @@ Sub table_drop(vTableName)
 End sub;
 
 /*
+ * Description : Checking if a table contains line or is empty
+ *               The name doesn't require the table really exists
+ *       Input : vTableName  - Name of the table to check
+ *      Output : vReturn - 0 : the table exists and is not empty
+ *                         1 : the table exists and is empty
+ *                         2 : the table doesn't exist
+ */
+Sub table_isempty(vTableName)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        LET vRowCount = NoOfRows(vTableName);
+        IF (vRowCount>0) THEN
+            vReturn=0;
+        ELSE
+            vReturn=1;
+        END IF;
+    ELSE
+        vReturn=2;
+    END IF;
+End sub;
+
+/*
+ * Description : Recreating an empty table after checking it exists and contains data (to avoid any error)
+ *       Input : vTableName  - Name of the table to truncate
+ *      Output : vReturn - 0 : the truncate was done
+ *                         1 : the truncate was not done
+ */
+Sub table_truncate(vTableName)
+    call table_isempty(vTableName);
+    IF (vReturn = 0) THEN
+        LET vColumnList='';
+
+        FOR vColumnPos=1 TO NoOfFields(vTableName)
+            IF(vColumnPos<>1) THEN
+                vColumnList = vColumnList & ', ';
+            END IF
+            vColumnList = vColumnList & FieldName(vColumnPos, vTableName);
+        NEXT vColumnPos
+
+        call table_drop(vTableName);
+        $(vTableName):
+        LOAD * INLINE [
+            $(vColumnList)
+        ]
+        ;
+        vReturn=0;
+    ELSE
+        vReturn=1;
+    END IF;
+End sub;
+
+/*
  * Description : Renaming a table
  *               If the destination table already exists the table is overwritten
  *       Input : vTableNameSrc - Source table
@@ -63,7 +115,6 @@ Sub column_drop(vTableName, vColumnName)
     END IF;
 End sub;
 
-
 /*
  * Description : Renaming a column in a table
  *               If the destination column already exists the column is overwritten
@@ -76,7 +127,8 @@ End sub;
  */
 Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
     call column_exist(vTableName, vColumnNameSrc);
-    IF (vReturn = 0) THEN
+TRACE EZL  vReturn=$(vReturn);
+    IF (vReturn=0) THEN
         vReturn=0;
     ELSE
         call column_exist(vTableName, vColumnNameDst);
@@ -97,7 +149,7 @@ End sub;
  *               vAppend     - Define if the file is overwritten or if the data are concatenated
  *                             0 : truncate mode (default)
  *                             1 : concatenation mode
- *               vBufferName - Temporary table name
+ *               vBufferPath - Temporary buffer file
  *      Output : None
  */
 Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
@@ -109,13 +161,13 @@ Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
 
     call table_exist(vTableName);
     IF (vReturn<>0) THEN
-        IF (vAppend<>0) THEN
+        call file_exist(vFilePath);
+        IF (vAppend<>0 AND vReturn<>0) THEN
             // Backup of the table content in an external file called buffer
             call file_option(vBufferPath);
             STORE $(vTableName) INTO $(vBufferPath) $(vFileWriteOption)
             ;
             call table_drop(vTableName);
-
             // Load the current content in the file in the table
             call file_option(vFilePath);
             $(vTableName):
@@ -183,7 +235,7 @@ Sub file_table_read(vFilePath, vTableName, vAppend, vPathInclude)
             call table_drop(vTableName);
         END IF;
         call file_option(vFilePath);
-        call file_auxi_load(vFilePath, vTableName, vPathInclude);
+        call _file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
@@ -249,7 +301,7 @@ Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend, vPathInclud
         END IF;
 
         call file_option(vFilePath, vWorksheetName);
-        call file_auxi_load(vFilePath, vTableName, vPathInclude);
+        call _file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
@@ -258,7 +310,7 @@ Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend, vPathInclud
     LET vPathInclude=vDefaultPathInclude;
 End sub;
 
-Sub file_auxi_load(vFilePath, vTableName, vPathInclude)
+Sub _file_auxi_load(vFilePath, vTableName, vPathInclude)
     call table_exist(vTableName);
     IF (vReturn <> 0) THEN
         SET vLoadMode = Concatenate;
@@ -267,7 +319,7 @@ Sub file_auxi_load(vFilePath, vTableName, vPathInclude)
     END IF;
 
     IF (vPathInclude <> 0) THEN
-        LET vSelectClause = '''$(vFilePath)'' as [_vFilePath], *';
+        LET vSelectClause = '''' & vFilePath & ''' as [_vFilePath], *';
     ELSE
         SET vSelectClause = *;
     END IF;
