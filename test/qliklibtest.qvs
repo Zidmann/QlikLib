@@ -101,6 +101,24 @@ End sub;
 call file_table_multiple_read(vFilePatternPath, vTableNameDst2, 0);
 TRACE;
 
+TRACE Create the table to truncate later;
+SET vTableNameToTruncate = myTableToTruncate;
+$(vTableNameToTruncate):
+LOAD * INLINE [
+    FIELD_1,  FIELD_2,  FIELD_3
+	'value1', 'value2', 'value3'
+]
+;
+TRACE;
+
+TRACE Truncate the table $(vTableNameToTruncate);
+call table_truncate(vTableNameToTruncate);
+TRACE;
+
+call table_isempty(vTableNameDst);        TRACE Test of the function table_isempty : with vVariableName = '$(vTableNameDst)';        TRACE => vReturn=$(vReturn);
+call table_isempty(vTableNameToTruncate); TRACE Test of the function table_isempty : with vVariableName = '$(vTableNameToTruncate)'; TRACE => vReturn=$(vReturn);
+call table_isempty('vUnknownTable');      TRACE Test of the function table_isempty : with vVariableName = 'vUnknownTable';           TRACE => vReturn=$(vReturn);
+
 SET vVarToFill1 = PRINT-OK;
 call variable_fill('vVarToFill1', 'PRINT-KO');        TRACE Test of the function variable_fill; TRACE => vVarToFill1=$(vVarToFill1);
 call variable_fill('vVarToFill2', vVarToFill1);       TRACE Test of the function variable_fill; TRACE => vVarToFill2=$(vVarToFill2);
