@@ -20,8 +20,6 @@ Some functions have not been implemented yet in the tests :
 - file_remove
 - file_excel_sheet
 - string_main
-- table_isempty
-- table_truncate
 
 ## Implemented functions
 
@@ -35,6 +33,7 @@ Some functions have not been implemented yet in the tests :
 | console_error | Print an error message in the specific format |
 | console_jumpline | Jump a line in the console |
 | console_delimitation | Printing a delimiter |
+
 
 * log.qvs - Module containing all the log functions
 
