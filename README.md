@@ -21,6 +21,7 @@ Some functions have not been implemented yet in the tests :
 - file_excel_sheet
 - string_main
 
+
 ## Implemented functions
 
 * console.qvs - Module containing all the console printing functions
@@ -98,6 +99,8 @@ Some functions have not been implemented yet in the tests :
 | file_table_read | Load data from a file and put them in a table |
 | file_table_multiple_read | Load data from one or several files and put them in a table |
 | file_excel_sheet | Load data from an excel document and put them in a table |
+| content_line_split | Take a table with key and values columns and splits the column values in several lines |
+| content_line_concatenate | Take a table with key and value columns and concatenate the values in one line |
 
 
 * date.qvs - Module containing all the date management functions

@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : table.qvs
-    Version     : 0.2.0
+    Version     : 0.3.0
     Description : Module containing all the table management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ Sub table_truncate(vTableName)
                 vColumnList = vColumnList & ', ';
             END IF
             vColumnList = vColumnList & FieldName(vColumnPos, vTableName);
-        NEXT vColumnPos
+        NEXT vColumnPos;
 
         call table_drop(vTableName);
         $(vTableName):
@@ -149,6 +149,7 @@ End sub;
  *                             0 : truncate mode (default)
  *                             1 : concatenation mode
  *               vBufferPath - Temporary buffer file
+ *                             './tmpBuffer.qvd' (default)
  *      Output : None
  */
 Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
@@ -218,7 +219,7 @@ End  sub;
  *                              0 : truncate mode
  *                              1 : concatenation mode (default)
  *               vPathInclude - Define if the path of the file must be included in the table (column _vFilePath)
- *                              0 : do not print it
+ *                              0 : do not print it (default)
  *                              1 : print it
  *      Output : None
  */
@@ -283,7 +284,7 @@ End sub;
  *                               0 : truncate mode
  *                               1 : concatenation mode (default)
  *               vPathInclude   - Define if the path of the file must be included in the table (column _vFilePath)
- *                               0 : do not print it
+ *                               0 : do not print it (default)
  *                               1 : print it
  *      Output : None
  */
@@ -328,6 +329,131 @@ Sub _file_auxi_load(vFilePath, vTableName, vPathInclude)
     LOAD $(vSelectClause)
     FROM ['$(vFilePath)'] $(vFileReadOption)
     ;
+End sub;
+
+/*
+ * Description : Take a table with key and values columns and splits the column values in several lines
+ *       Input : vTableName    - Name of the table where to split the values
+ *               vColumnKey    - Name of the column containing the key
+ *               vColumnValues - Name of the column containing the values
+ *               vDelimeter    - String to seperate the diffent values
+ *                              ',' is used by defaut
+ *               vWorkingTable - Temporary table to use
+ *                              '_vSplitWorkTable' is used by defaut
+ *      Output : None
+ */
+Sub content_line_split(vTableName, vColumnKey, vColumnValues, vDelimeter, vWorkingTable)
+    SET vDefaultDelimeter=',';
+    SET vDefaultWorkingTable='_vSplitWorkTable';
+    call variable_fill('vDelimeter', vDefaultDelimeter);
+    call variable_fill('vWorkingTable', vDefaultWorkingTable);
+
+    LET vRowCount=NoOfRows(vTableName);
+    IF vRowCount>0 THEN
+        call table_drop(vWorkingTable);
+        call column_drop('_KEY');
+        call column_drop('_VALUE');
+        FOR vPos=0 TO (vRowCount-1)
+            LET vKey=Peek(vColumnKey, vPos, vTableName);
+            LET vValues=Peek(vColumnValues, vPos, vTableName);
+
+            LET vWordCount=SubStringCount(vValues, vDelimeter)+1;
+            FOR vWordIdx=1 TO vWordCount
+                LET vWord=Trim(SubField(vValues, vDelimeter, vWordIdx));
+                $(vWorkingTable):
+                LOAD * INLINE[
+                    _KEY, _VALUE
+                    '$(vKey)', '$(vWord)'
+                ];
+            NEXT vWordIdx;
+        NEXT vPos;
+
+        call table_drop(vTableName);
+        $(vTableName):
+        LOAD DISTINCT _KEY   as $(vColumnKey),
+                      _VALUE as $(vColumnValues)
+        RESIDENT $(vWorkingTable)
+        ORDER BY _KEY, _VALUE;
+        call table_drop(vWorkingTable);
+    ELSE
+        TRACE No line to process;
+    END IF;
+
+    LET vDelimeter=vDefaultDelimeter;
+    LET vWorkingTable=vDefaultWorkingTable;
+End sub;
+
+/*
+ * Description : Take a table with key and value columns and concatenate the values in one line
+ *       Input : vTableName    - Name of the table where to concatenate the values
+ *               vColumnKey    - Name of the column containing the key
+ *               vColumnValue  - Name of the column containing the value
+ *               vDelimeter    - String to seperate the diffent values
+ *                              ',' is used by defaut
+ *               vWorkingTable - Temporary table to use
+ *                              '_vSplitWorkTable' is used by defaut
+ *      Output : None
+ */
+Sub content_line_concatenate(vTableName, vColumnKey, vColumnValue, vDelimeter, vWorkingTable)
+    SET vDefaultDelimeter=',';
+    SET vDefaultWorkingTable='_vSplitWorkTable';
+    call variable_fill('vDelimeter', vDefaultDelimeter);
+    call variable_fill('vWorkingTable', vDefaultWorkingTable);
+
+    LET vRowCount=NoOfRows(vTableName);
+    IF vRowCount>0 THEN
+        call table_drop(vWorkingTable);
+        call column_drop('_KEY');
+        call column_drop('_VALUE');
+        $(vWorkingTable):
+        LOAD DISTINCT Trim($(vColumnKey))   as _KEY,
+                      Trim($(vColumnValue)) as _VALUE
+        RESIDENT $(vTableName)
+		ORDER BY $(vColumnKey), $(vColumnValue);
+        call table_drop(vTableName);
+
+        LET vRowCount=NoOfRows(vWorkingTable);
+        LET vPreviousKey='';
+        LET vValues='';
+        LET vFlag=0;
+        FOR vPos=0 TO (vRowCount-1)
+            LET vKey=Peek('_KEY', vPos, vWorkingTable);
+            LET vValue=Peek('_VALUE', vPos, vWorkingTable);
+
+            IF (vPos=(vRowCount-1)) THEN
+                IF (vFlag=0) THEN
+                    vValues=vValue;
+                    vFlag=1;
+                ELSE
+                    vValues=vValues & vDelimeter & vValue;
+                END IF;
+            END IF;
+
+            IF ((vPos>0 AND vPreviousKey<>vKey) OR (vPos=(vRowCount-1))) THEN
+                $(vTableName):
+                LOAD * INLINE[
+                    vColumnKey,        vColumnValue
+                    '$(vPreviousKey)', '$(vValues)'
+                ];
+                vValues=vValue;
+                vFlag=0;
+            END IF;
+
+            vPreviousKey=vKey;
+            IF (vFlag=0) THEN
+                vValues=vValue;
+                vFlag=1;
+            ELSE
+                vValues=vValues & vDelimeter & vValue;
+            END IF;
+        NEXT vPos;
+        call table_drop(vWorkingTable);
+    ELSE
+        TRACE No line to process;
+    END IF;
+
+    LET vDelimeter=vDefaultDelimeter;
+    LET vWorkingTable=vDefaultWorkingTable;
 End sub;
 
 // ----------------------------------------------------------------------------------------------------------------

@@ -106,13 +106,53 @@ SET vTableNameToTruncate = myTableToTruncate;
 $(vTableNameToTruncate):
 LOAD * INLINE [
     FIELD_1,  FIELD_2,  FIELD_3
-	'value1', 'value2', 'value3'
+    'value1', 'value2', 'value3'
 ]
 ;
 TRACE;
 
 TRACE Truncate the table $(vTableNameToTruncate);
 call table_truncate(vTableNameToTruncate);
+TRACE;
+
+TRACE Create the table to split later;
+SET vTableNameToSplit = myTableToSplit;
+$(vTableNameToSplit):
+LOAD * INLINE [
+    FIELD_KEY,  FIELD_VALUES,  FIELD_USELESS
+    'key2', 'value21- value22',                 'useless2'
+    'key1', 'value11 -value12-value13-value11', 'useless1'
+    'key4', 'value41- value42 -value43',        'useless4'
+    'key3', 'value31 -value31',                 'useless3'
+]
+;
+TRACE;
+
+TRACE Split the table $(vTableNameToSplit);
+call content_line_split(vTableNameToSplit, 'FIELD_KEY', 'FIELD_VALUES', '-');
+TRACE;
+
+TRACE Create the table to concatenate later;
+SET vTableNameToConcatenate = myTableToConcatenate;
+$(vTableNameToConcatenate):
+LOAD * INLINE [
+    FIELD_KEYb,  FIELD_VALUEb,  FIELD_USELESSb
+    'key4 ',     ' value43',   'useless43'
+    ' key2',     ' value21',   'useless21'
+    'key1 ',     ' value11',   'useless11'
+    ' key3',     'value31 ',   'useless31'
+    'key2 ',     'value22 ',   'useless22'
+    'key3 ',     'value32 ',   'useless32'
+    ' key4',     'value41 ',   'useless41'
+    'key3',      'value33',    'useless33'
+    'key4',      'value42',    'useless42'
+    'key4',      'value44',    'useless44'
+]
+;
+TRACE;
+
+TRACE Concatenate the table $(vTableNameToConcatenate);
+call content_line_concatenate(vTableNameToConcatenate, 'FIELD_KEYb', 'FIELD_VALUEb', ',');
 TRACE;
 
 call table_isempty(vTableNameDst);        TRACE Test of the function table_isempty : with vVariableName = '$(vTableNameDst)';        TRACE => vReturn=$(vReturn);
