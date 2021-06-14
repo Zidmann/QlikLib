@@ -409,7 +409,7 @@ Sub content_line_concatenate(vTableName, vColumnKey, vColumnValue, vDelimeter, v
         LOAD DISTINCT Trim($(vColumnKey))   as _KEY,
                       Trim($(vColumnValue)) as _VALUE
         RESIDENT $(vTableName)
-		ORDER BY $(vColumnKey), $(vColumnValue);
+        ORDER BY $(vColumnKey), $(vColumnValue);
         call table_drop(vTableName);
 
         LET vRowCount=NoOfRows(vWorkingTable);
