@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : qliklibtest.qvs
-    Version     : 0.3.0
+    Version     : 0.4.0
     Description : Script to use the library functions to check everything still works
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -168,6 +168,37 @@ call column_exist(vTableNameToRename, 'NOTEXIST');    TRACE Test of the function
 call column_exist(vTableNameDst,      vColumnToDrop); TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = $(vColumnToDrop); TRACE => vReturn=$(vReturn);
 call column_exist(vTableNameDst,      'COLUMN1');     TRACE Test of the function column_exist : with vTableName = $(vTableNameDst) vColumnName = COLUMN1;          TRACE => vReturn=$(vReturn);
 //excel_worksheet_exist
+TRACE;
+
+TRACE == Testing the histogram functions ==;
+TRACE Create the table with the range;
+SET vRangeTableName = myRangeTable;
+SET vTableNameToRange = myTableToCompleteWithRange;
+$(vRangeTableName):
+LOAD * INLINE [
+    MINVALUE,  LABEL
+    10,   '10-100'
+    100,  '100-1000'
+    1000, ''
+]
+;
+
+$(vTableNameToRange):
+LOAD * INLINE [
+    VALUE,
+    1,
+    20,
+    300,
+    40,
+    2,
+    4000,
+    5,
+    10,
+    15,
+    1
+]
+;
+call histogram_ranges_from_values(vTableNameToRange, 'VALUE', vRangeTableName, 'MINVALUE');
 TRACE;
 
 TRACE == Testing the log functions ==;

@@ -103,6 +103,12 @@ Some functions have not been implemented yet in the tests :
 | content_line_concatenate | Take a table with key and value columns and concatenate the values in one line |
 
 
+* histogram.qvs - Module containing all the histogram management functions
+| Name | Description |
+| ---- | ---- |
+| histogram_ranges_from_values | Add a new column in a table with the range of the each value in a specific column according a table containing all the ranges |
+| histogram_ranges_from_function | Add a new column in a table with the range of the each value in a specific column according a function |
+
 * date.qvs - Module containing all the date management functions
 
 | Name | Description |
