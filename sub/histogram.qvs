@@ -98,7 +98,7 @@ Sub histogram_ranges_from_function(vTableName, vColumnName, vFunction, vRangeCol
         vReturn=1;
     ELSE
         LET vHistogramErrorCount = $(ScriptErrorCount);
-        //$(vFunction(0));
+        LET vCheckFunction=$(vFunction(0));
         IF (vHistogramErrorCount<>$(ScriptErrorCount)) THEN
             vReturn=2;
         ELSE
