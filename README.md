@@ -19,8 +19,7 @@ Some functions have not been implemented yet in the tests :
 - excel_worksheet_exist
 - file_remove
 - file_excel_sheet
-- string_main
-
+- Building a string search function to catch some words from a list in a table
 
 ## Implemented functions
 
@@ -124,4 +123,5 @@ Some functions have not been implemented yet in the tests :
 
 | Name | Description |
 | ---- | ---- |
-| string_main | Extract the main content of a string |
+| string_find_specific_content     | |
+| string_replace_special_character | Building a string search function to catch some words from a list in a table |
