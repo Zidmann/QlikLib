@@ -1,0 +1,124 @@
+// ----------------------------------------------------------------------------------------------------------------
+/*
+    Author      : Zidmann (emmanuel.zidel@gmail.com)
+    Script      : histogram.qvs
+    Version     : 0.1.0
+    Description : Module containing all the histogram management functions
+ */
+// ----------------------------------------------------------------------------------------------------------------
+
+LET vErrorCount = $(ScriptErrorCount);
+
+// ----------------------------------------------------------------------------------------------------------------
+// FUNCTIONS TO INTERACT WITH THE HISTOGRAMS
+// ----------------------------------------------------------------------------------------------------------------
+
+/*
+ * Description : Add a new column in a table with the range of the each value in a specific column according a table containing all the ranges
+ *       Input : vTableName          - Name of the table where to add a new column with the range
+ *               vColumnName         - Name of the column to read in vTableName table
+ *               vRangeTableName     - Name of the table with the ranges
+ *               vRangeColumnName    - Name of the column to read in vRangeTableName table and to add in vTableName table
+ *               vWorkHistogramTable - Temporary table to use
+ *                                 '_vHistogramWorkTable' is used by defaut
+ *      Output : vReturn - 0 : the range were properly defined
+ *                         1 : the table to complete doesn't exist
+ *                         2 : the table with the ranges doesn't exist
+ *                         3 : the column to read doesn't exist
+ *                         4 : the table with the ranges has one or no element
+ */
+Sub histogram_ranges_from_values(vTableName, vColumnName, vRangeTableName, vRangeColumnName, vWorkHistogramTable)
+    SET vDefaultHistogramTable='_vHistogramWorkTable';
+    call variable_fill('vWorkHistogramTable', vDefaultHistogramTable);
+
+    call table_exist(vTableName);
+    IF (vReturn=0) THEN
+        vReturn=1;
+    ELSE
+        call table_exist(vRangeTableName);
+        IF (vReturn=0) THEN
+            vReturn=2;
+        ELSE
+            call column_exist(vRangeTableName, vRangeColumnName);
+            IF (vReturn=0) THEN
+                vReturn=3;
+            ELSE
+                LET vRowCount=NoOfRows(vRangeTableName);
+                IF (vRowCount<2) THEN
+                    vReturn=4;
+                ELSE
+                    call column_drop(vTableName, vRangeColumnName);
+                    call table_drop(vWorkHistogramTable);
+
+                    $(vWorkHistogramTable):
+                    LOAD DISTINCT $(vRangeColumnName)
+                    RESIDENT $(vRangeTableName)
+                    ORDER BY $(vRangeColumnName) DESC;
+
+                    LET vKey=Peek(vRangeColumnName, 0, vWorkHistogramTable);
+                    LET vNextKey=Peek(vRangeColumnName, 1, vWorkHistogramTable);
+
+                    SET vParam=$1;
+                    LET vFunction='IF($(vParam)<$(vKey), $(vNextKey), ''+++'')';
+
+                    LET vRowCount=NoOfRows(vWorkHistogramTable);
+                    FOR vPos=1 TO (vRowCount-2)
+                        LET vKey=Peek(vRangeColumnName, vPos, vWorkHistogramTable);
+                        LET vNextKey=Peek(vRangeColumnName, vPos+1, vWorkHistogramTable);
+                        LET vFunction='IF($(vParam)<$(vKey), $(vNextKey), $(vFunction))';
+                    NEXT vPos;
+
+                    LET vKey=Peek(vRangeColumnName, vRowCount-1, vWorkHistogramTable);
+                    LET vFunction='IF($(vParam)<$(vKey), ''---'', $(vFunction))';
+                    call histogram_ranges_from_function(vTableName, vColumnName, vFunction, vRangeColumnName);
+
+                    vReturn=0;
+                END IF;
+            END IF;
+        END IF;
+    END IF;
+    call table_drop(vWorkHistogramTable);
+
+    LET vWorkHistogramTable=vDefaultHistogramTable;
+End sub;
+
+/*
+ * Description : Add a new column in a table with the range of the each value in a specific column according a function
+ *       Input : vTableName       - Name of the table where to add a new column with the range
+ *               vColumnName      - Name of the column to read in vTableName table
+ *               vFunction        - Function to use to define for each value the associated range
+ *               vRangeColumnName - Name of the column to add in vTableName table
+ *      Output : vReturn - 0 : the range were properly defined
+ *                         1 : the table to complete doesn't exist
+ *                         2 : the function is not correct
+ */
+Sub histogram_ranges_from_function(vTableName, vColumnName, vFunction, vRangeColumnName)
+    call table_exist(vTableName);
+    IF (vReturn=0) THEN
+        vReturn=1;
+    ELSE
+        LET vHistogramErrorCount = $(ScriptErrorCount);
+        LET vCheckFunction=$(vFunction(0));
+        IF (vHistogramErrorCount<>$(ScriptErrorCount)) THEN
+            vReturn=2;
+        ELSE
+            call column_drop(vTableName, vRangeColumnName);
+            LEFT JOIN($(vTableName))
+            LOAD DISTINCT $(vColumnName),
+                          $(vFunction($(vColumnName))) as $(vRangeColumnName)
+            RESIDENT $(vTableName)
+            ;
+            vReturn=0;
+        END IF;
+    END IF;
+End sub;
+
+// ----------------------------------------------------------------------------------------------------------------
+// PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS
+// ----------------------------------------------------------------------------------------------------------------
+LET vDiffErrorCount = $(ScriptErrorCount) - vErrorCount;
+IF (vDiffErrorCount > 0) THEN
+    call console_error('Table module loaded with $(vDiffErrorCount) error(s)');
+ELSE
+    call console_info('Table module successfully loaded');
+END IF;

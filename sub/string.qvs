@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : string.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Module containing all the string useful functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -14,11 +14,51 @@ LET vErrorCount = $(ScriptErrorCount);
 // ----------------------------------------------------------------------------------------------------------------
 
 /*
- * Description : Extract the main content of a string
- *       Input : $1 - String to analyze
+ * Description : Building a string search function to catch some words from a list in a table
+ *       Input : vFunctionName - Name of the variable which will contain the function
+ *               vTableName    - Name of the table where the criteria and location labels are stored
+ *               vSearchColumn - Name of the column with the word to find in a string
+ *               vLabelColumn  - Name of the column with the label to apply if the word is found
+ *      Output : vReturn - 0 : the table and the columns exist, plus the string was generated
+ *                         1 : the table doesn't exist
+ *                         2 : the search column doesn't exist
+ *                         3 : the label column doesn't exist
+ */
+
+Sub string_find_specific_content(vFunctionName, vTableName, vSearchColumn, vLabelColumn)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        call column_exist(vTableName, vSearchColumn);
+        IF (vReturn<>0) THEN
+            call column_exist(vTableName, vLabelColumn);
+            IF (vReturn<>0) THEN
+                LET vRowCount=NoOfRows(vTableName);
+                FOR vPos=0 TO (vRowCount-1)
+                    LET vSearchValue=Peek(vSearchColumn, vPos, vTableName);
+                    LET vLabelValue=Peek(vLabelColumn, vPos, vTableName);
+                    IF (vPos=0) THEN
+                        LET $(vFunctionName)='''''';
+                    END IF;
+                    LET $(vFunctionName)='IF(INDEX(UPPER($1), UPPER(''$(vSearchValue)''))<>0, ''$(vLabelValue)'', $($(vFunctionName)))';
+                NEXT vPos;
+                vReturn=0;
+            ELSE
+                vReturn=3;
+            END IF;            
+        ELSE
+            vReturn=2;
+        END IF;
+    ELSE
+        vReturn=1;
+    END IF;
+End sub;
+
+/*
+ * Description : Remove special characters in a string
+ *       Input : $1 - String to process
  *      Output : None
  */
-SET string_main = Trim(Subfield(Subfield($1, '-', 1), '(', 1));
+SET string_replace_special_character = Replace(Replace(Replace($1, 'à', 'a'), 'é', 'e'), 'è', 'e');
 
 // ----------------------------------------------------------------------------------------------------------------
 // PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS

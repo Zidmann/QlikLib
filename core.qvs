@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : core.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Main script to load all the different components of 
                   the custom Qlik library
  */
@@ -30,12 +30,13 @@ SET LongDayNames='lundi;mardi;mercredi;jeudi;vendredi;samedi;dimanche';
 SET ErrorMode=0;
 
 // Load the different modules
-// WARNING - Put at first console and object modules because other modules relie on them
+// WARNING - Put at first console and object modules because other modules rely on them
 $(Must_Include='$(vQliklibPath)\sub\console.qvs');
 $(Must_Include='$(vQliklibPath)\sub\object.qvs');
 $(Must_Include='$(vQliklibPath)\sub\number.qvs');
 $(Must_Include='$(vQliklibPath)\sub\file.qvs');
 $(Must_Include='$(vQliklibPath)\sub\table.qvs');
+$(Must_Include='$(vQliklibPath)\sub\histogram.qvs');
 $(Must_Include='$(vQliklibPath)\sub\log.qvs');
 $(Must_Include='$(vQliklibPath)\sub\date.qvs');
 $(Must_Include='$(vQliklibPath)\sub\string.qvs');

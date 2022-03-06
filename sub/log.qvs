@@ -2,7 +2,7 @@
 /*
     Author      : Emmanuel Zidel-Cauffet (emmanuel.zidel@gmail.com)
     Script      : log.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Module containing all the log functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -12,6 +12,73 @@ LET vErrorCount = $(ScriptErrorCount);
 // ----------------------------------------------------------------------------------------------------------------
 // FUNCTIONS TO INTERACT WITH LOG FILE
 // ----------------------------------------------------------------------------------------------------------------
+
+// Definition of the log table name
+SET vLogTable='_log_table';
+
+/*
+ * Description : Write in a file the content of the table dedicated to the log then purge the table
+ *       Input : vMsg   - The message to write in the screen
+ *               vLevel - The level of the message (INFO by default)
+ */
+Sub log_persist(vFilePath)
+    call table_exist(vLogTable);
+    IF (vReturn <> 0) THEN
+        call table_file_write(vLogTable, vFilePath, 1);
+        call table_truncate(vLogTable);
+    END IF;
+End sub;
+
+/*
+ * Description : Log a message in the dedicated table and print it on the screen
+ *       Input : vMsg   - The message to write in the screen
+ *               vLevel - The level of the message (INFO by default)
+ */
+Sub log_print(vMsg, vLevel)
+    LET vNow = Date(Now(), 'YYYY-MM-DD hh:mm:ss');
+
+    LET vPrefix='';
+    SWITCH vLevel
+        CASE 'INFO'
+            vPrefix='[i]'
+        CASE 'SUCESS'
+            vPrefix='[+]'
+        CASE 'ERROR'
+            vPrefix='[-]'
+    END SWITCH;
+
+    $(vLogTable):
+    LOAD * INLINE [
+        EVENTDATE, LEVEL, MESSAGE
+        $(vNow), $(vLevel), $(vMsg)
+    ]
+    ;
+    TRACE [$(vNow)]$(vPrefix)$(vMsg);
+End sub;
+
+/*
+ * Description : Log an information message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub log_info(vMsg)
+    call log_print(vMsg, 'INFO');
+End sub;
+
+/*
+ * Description : Log a success message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub log_sucess(vMsg)
+    call log_print(vMsg, 'SUCESS');
+End sub;
+
+/*
+ * Description : Log an error message in the specific format
+ *       Input : vMsg - The message to write in the screen
+ */
+Sub log_error(vMsg)
+    call log_print(vMsg, 'ERROR');
+End sub;
 
 // ----------------------------------------------------------------------------------------------------------------
 // PRINT IF THE LOADING FINISHED WITH OR WITHOUT ANY ERRORS

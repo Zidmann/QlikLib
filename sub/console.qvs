@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : console.qvs
-    Version     : 0.0.0
+    Version     : 0.1.0
     Description : Module containing all the console printing functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ LET vErrorCount = $(ScriptErrorCount);
 // FUNCTIONS TO INTERACT WITH CONSOLE
 // ----------------------------------------------------------------------------------------------------------------
 /*
- * Description : Print a message one the batch console
+ * Description : Print a message on the batch console
  *       Input : vMsg - The message to write in the screen
  */
 Sub console_print(vMsg)
@@ -26,7 +26,7 @@ End sub;
  *       Input : vMsg - The message to write in the screen
  */
 Sub console_info(vMsg)
-    call console_print('[i]' & '$(vMsg)');
+    call console_print('[i]' & vMsg);
 End sub;
 
 /*
@@ -34,7 +34,7 @@ End sub;
  *       Input : vMsg - The message to write in the screen
  */
 Sub console_sucess(vMsg)
-    call console_print('[+]' & '$(vMsg)');
+    call console_print('[+]' & vMsg);
 End sub;
 
 /*
@@ -42,7 +42,7 @@ End sub;
  *       Input : vMsg - The message to write in the screen
  */
 Sub console_error(vMsg)
-    call console_print('[-]' & '$(vMsg)');
+    call console_print('[-]' & vMsg);
 End sub;
 
 /*
@@ -59,7 +59,7 @@ Sub console_delimitation
     IF (vLimitSize<>0) THEN
         SET vLimitSize=50;
         DO WHILE vLimitSize>0
-            LET vLimitText='$(vLimitText)' & '-';
+            LET vLimitText=vLimitText & '-';
             LET vLimitSize=vLimitSize-1;
         LOOP
     END IF;

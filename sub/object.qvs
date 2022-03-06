@@ -2,8 +2,8 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : object.qvs
-    Version     : 0.0.0
-    Description : Module containing all the basical object management functions
+    Version     : 0.1.0
+    Description : Module containing all the basic object management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ End sub;
  *                         1 : it exists
  */
 Sub file_exist(vFilePath)
-    IF (IsNull(filesize('$(vFilePath)'))) THEN
+    IF (IsNull(filesize(vFilePath))) THEN
         vReturn=0;
     ELSE
         vReturn=1;
@@ -45,7 +45,7 @@ End sub;
  *                         1 : it exists
  */
 Sub table_exist(vTableName)
-    IF (Len(TableNumber('$(vTableName)'))>0) THEN
+    IF (Len(TableNumber(vTableName))>0) THEN
         vReturn=1;
     ELSE
         vReturn=0;
@@ -116,9 +116,9 @@ End sub;
  *      Output : None
  */
 Sub variable_fill(vVariableName, vDefaultValue)
-    call variable_exist('$(vVariableName)');
+    call variable_exist(vVariableName);
     IF (vReturn = 0) THEN
-        LET $(vVariableName)='$(vDefaultValue)';
+        LET $(vVariableName)=vDefaultValue;
     END IF;
 End sub;
 

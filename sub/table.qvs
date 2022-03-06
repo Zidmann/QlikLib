@@ -2,7 +2,7 @@
 /*
     Author      : Zidmann (emmanuel.zidel@gmail.com)
     Script      : table.qvs
-    Version     : 0.0.0
+    Version     : 0.3.0
     Description : Module containing all the table management functions
  */
 // ----------------------------------------------------------------------------------------------------------------
@@ -26,11 +26,63 @@ Sub table_drop(vTableName)
 End sub;
 
 /*
+ * Description : Checking if a table contains line or is empty
+ *               The name doesn't require the table really exists
+ *       Input : vTableName  - Name of the table to check
+ *      Output : vReturn - 0 : the table exists and is not empty
+ *                         1 : the table exists and is empty
+ *                         2 : the table doesn't exist
+ */
+Sub table_isempty(vTableName)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        LET vRowCount = NoOfRows(vTableName);
+        IF (vRowCount>0) THEN
+            vReturn=0;
+        ELSE
+            vReturn=1;
+        END IF;
+    ELSE
+        vReturn=2;
+    END IF;
+End sub;
+
+/*
+ * Description : Recreating an empty table after checking it exists and contains data (to avoid any error)
+ *       Input : vTableName  - Name of the table to truncate
+ *      Output : vReturn - 0 : the truncate was done
+ *                         1 : the truncate was not done
+ */
+Sub table_truncate(vTableName)
+    call table_isempty(vTableName);
+    IF (vReturn = 0) THEN
+        LET vColumnList='';
+
+        FOR vColumnPos=1 TO NoOfFields(vTableName)
+            IF(vColumnPos<>1) THEN
+                vColumnList = vColumnList & ', ';
+            END IF
+            vColumnList = vColumnList & FieldName(vColumnPos, vTableName);
+        NEXT vColumnPos;
+
+        call table_drop(vTableName);
+        $(vTableName):
+        LOAD * INLINE [
+            $(vColumnList)
+        ]
+        ;
+        vReturn=0;
+    ELSE
+        vReturn=1;
+    END IF;
+End sub;
+
+/*
  * Description : Renaming a table
  *               If the destination table already exists the table is overwritten
  *       Input : vTableNameSrc - Source table
  *               vTableNameDst - Destination table
- *      Output : vReturn - 0 : nothind done since the table doesn't exist
+ *      Output : vReturn - 0 : nothing done since the table doesn't exist
  *                         1 : the table was simply renamed
  *                         2 : the table was renamed after dropping the previous table
  */
@@ -63,9 +115,19 @@ Sub column_drop(vTableName, vColumnName)
     END IF;
 End sub;
 
+/*
+ * Description : Renaming a column in a table
+ *               If the destination column already exists the column is overwritten
+ *       Input : vTableName     - Name of the table where to make changes in the columns
+ *               vColumnNameSrc - Source column
+ *               vColumnNameDst - Destination column
+ *      Output : vReturn - 0 : nothing done since the column doesn't exist in this table
+ *                         1 : the column was simply renamed
+ *                         2 : the column was renamed after dropping the previous column
+ */
 Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
     call column_exist(vTableName, vColumnNameSrc);
-    IF (vReturn = 0) THEN
+    IF (vReturn=0) THEN
         vReturn=0;
     ELSE
         call column_exist(vTableName, vColumnNameDst);
@@ -79,33 +141,33 @@ Sub column_rename(vTableName, vColumnNameSrc, vColumnNameDst)
     END IF;
 End sub;
 
-
 /*
- * Description : Write data from a table into a file 
+ * Description : Write data from a table into a file
  *       Input : vTableName  - Name of the table to write
  *               vFilePath   - Path of the file where to write data
  *               vAppend     - Define if the file is overwritten or if the data are concatenated
  *                             0 : truncate mode (default)
  *                             1 : concatenation mode
- *               vBufferName - Temporary table name
+ *               vBufferPath - Temporary buffer file
+ *                             './tmpBuffer.qvd' (default)
  *      Output : None
  */
 Sub table_file_write(vTableName, vFilePath, vAppend, vBufferPath)
     SET vDefaultAppend=0;
     SET vDefaultBufferPath='./tmpBuffer.qvd';
 
-    call variable_fill('vAppend', '$(vDefaultAppend)');
-    call variable_fill('vBufferPath', '$(vDefaultBufferPath)');
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vBufferPath', vDefaultBufferPath);
 
     call table_exist(vTableName);
     IF (vReturn<>0) THEN
-        IF (vAppend<>0) THEN
+        call file_exist(vFilePath);
+        IF (vAppend<>0 AND vReturn<>0) THEN
             // Backup of the table content in an external file called buffer
             call file_option(vBufferPath);
             STORE $(vTableName) INTO $(vBufferPath) $(vFileWriteOption)
             ;
             call table_drop(vTableName);
-
             // Load the current content in the file in the table
             call file_option(vFilePath);
             $(vTableName):
@@ -151,30 +213,67 @@ End  sub;
 
 /*
  * Description : Load data from a file and put them in a table
- *       Input : vFilePath   - Path of the file to read to load data
- *               vTableName  - Name of the table where to write data
- *               vAppend     - Define if the table is overwritten or if the data are concatenated
- *                             0 : truncate mode
- *                             1 : concatenation mode (default)
+ *       Input : vFilePath    - Path of the file to read to load data
+ *               vTableName   - Name of the table where to write data
+ *               vAppend      - Define if the table is overwritten or if the data are concatenated
+ *                              0 : truncate mode
+ *                              1 : concatenation mode (default)
+ *               vPathInclude - Define if the path of the file must be included in the table (column _vFilePath)
+ *                              0 : do not print it (default)
+ *                              1 : print it
  *      Output : None
  */
-Sub file_table_read(vFilePath, vTableName, vAppend)
+Sub file_table_read(vFilePath, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
-    call variable_fill('vAppend', '$(vDefaultAppend)');
+    SET vDefaultPathInclude=0;
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vPathInclude', vDefaultPathInclude);
+
     call file_exist(vFilePath);
     IF (vReturn<>0) THEN
         IF (vAppend=0) THEN
             call table_drop(vTableName);
         END IF;
-
         call file_option(vFilePath);
-        call file_auxi_load;
+        call _file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
 
     LET vAppend=vDefaultAppend;
+    LET vPathInclude=vDefaultPathInclude;
 End  sub;
+
+/*
+ * Description : Load data from one or several files and put them in a table
+ *       Input : vFilePatternPath - Pattern of the path of the file(s) to read
+ *               vTableName       - Name of the table where to write data
+ *               vAppend          - Define if the table is overwritten or if the data are concatenated
+ *                                  0 : truncate mode
+ *                                  1 : concatenation mode (default)
+ *      Output : None
+ */
+Sub file_table_multiple_read(vFilePatternPath, vTableName, vAppend)
+    SET vDefaultAppend=1;
+    call variable_fill('vAppend', vDefaultAppend);
+
+    SET vFlag = 0;
+    FOR EACH vFilePath in FileList(vFilePatternPath)
+        SET vPathInclude = 1;
+        IF (vAppend=0 AND vFlag=0) THEN
+            call file_table_read(vFilePath, vTableName, vAppend, vPathInclude);
+        ELSE
+            call file_table_read(vFilePath, vTableName, 1, vPathInclude);
+        END IF;
+        vFlag=1;
+    NEXT vFilePath;
+
+    IF (vFlag=0) THEN
+        call console_info('No file to read');
+    END IF;
+
+    LET vAppend=vDefaultAppend;
+End sub; 
 
 /*
  * Description : Load data from an excel document and put them in a table
@@ -182,13 +281,18 @@ End  sub;
  *               vWorksheetName - Name of a worksheet
  *               vTableName     - Name of the table where to write data
  *               vAppend        - Define if the table is overwritten or if the data are concatenated
- *                             0 : truncate mode
- *                             1 : concatenation mode (default)
+ *                               0 : truncate mode
+ *                               1 : concatenation mode (default)
+ *               vPathInclude   - Define if the path of the file must be included in the table (column _vFilePath)
+ *                               0 : do not print it (default)
+ *                               1 : print it
  *      Output : None
  */
-Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend)
+Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend, vPathInclude)
     SET vDefaultAppend=1;
-    call variable_fill('vAppend', '$(vDefaultAppend)');
+    SET vDefaultPathInclude=0;
+    call variable_fill('vAppend', vDefaultAppend);
+    call variable_fill('vPathInclude', vDefaultPathInclude);
 
     call excel_worksheet_exist(vFilePath, vWorksheetName);
     IF (vReturn<>0) THEN
@@ -197,19 +301,159 @@ Sub file_excel_sheet(vFilePath, vWorksheetName, vTableName, vAppend)
         END IF;
 
         call file_option(vFilePath, vWorksheetName);
-        call file_auxi_load;
+        call _file_auxi_load(vFilePath, vTableName, vPathInclude);
     ELSE
         call console_info('No file to read');
     END IF;
 
     LET vAppend=vDefaultAppend;
+    LET vPathInclude=vDefaultPathInclude;
 End sub;
 
-Sub file_auxi_load
+Sub _file_auxi_load(vFilePath, vTableName, vPathInclude)
+    call table_exist(vTableName);
+    IF (vReturn <> 0) THEN
+        SET vLoadMode = Concatenate;
+    ELSE
+        SET vLoadMode = NoConcatenate;
+    END IF;
+
+    IF (vPathInclude <> 0) THEN
+        LET vSelectClause = '''' & vFilePath & ''' as [_vFilePath], *';
+    ELSE
+        SET vSelectClause = *;
+    END IF;
+
     $(vTableName):
-    LOAD *
+    $(vLoadMode)
+    LOAD $(vSelectClause)
     FROM ['$(vFilePath)'] $(vFileReadOption)
     ;
+End sub;
+
+/*
+ * Description : Take a table with key and values columns and splits the column values in several lines
+ *       Input : vTableName    - Name of the table where to split the values
+ *               vColumnKey    - Name of the column containing the key
+ *               vColumnValues - Name of the column containing the values
+ *               vDelimeter    - String to seperate the diffent values
+ *                              ',' is used by defaut
+ *               vWorkingTable - Temporary table to use
+ *                              '_vSplitWorkTable' is used by defaut
+ *      Output : None
+ */
+Sub content_line_split(vTableName, vColumnKey, vColumnValues, vDelimeter, vWorkingTable)
+    SET vDefaultDelimeter=',';
+    SET vDefaultWorkingTable='_vSplitWorkTable';
+    call variable_fill('vDelimeter', vDefaultDelimeter);
+    call variable_fill('vWorkingTable', vDefaultWorkingTable);
+
+    LET vRowCount=NoOfRows(vTableName);
+    IF vRowCount>0 THEN
+        call table_drop(vWorkingTable);
+        call column_drop('_KEY');
+        call column_drop('_VALUE');
+        FOR vPos=0 TO (vRowCount-1)
+            LET vKey=Peek(vColumnKey, vPos, vTableName);
+            LET vValues=Peek(vColumnValues, vPos, vTableName);
+
+            LET vWordCount=SubStringCount(vValues, vDelimeter)+1;
+            FOR vWordIdx=1 TO vWordCount
+                LET vWord=Trim(SubField(vValues, vDelimeter, vWordIdx));
+                $(vWorkingTable):
+                LOAD * INLINE[
+                    _KEY, _VALUE
+                    '$(vKey)', '$(vWord)'
+                ];
+            NEXT vWordIdx;
+        NEXT vPos;
+
+        call table_drop(vTableName);
+        $(vTableName):
+        LOAD DISTINCT _KEY   as $(vColumnKey),
+                      _VALUE as $(vColumnValues)
+        RESIDENT $(vWorkingTable)
+        ORDER BY _KEY, _VALUE;
+        call table_drop(vWorkingTable);
+    ELSE
+        TRACE No line to process;
+    END IF;
+
+    LET vDelimeter=vDefaultDelimeter;
+    LET vWorkingTable=vDefaultWorkingTable;
+End sub;
+
+/*
+ * Description : Take a table with key and value columns and concatenate the values in one line
+ *       Input : vTableName    - Name of the table where to concatenate the values
+ *               vColumnKey    - Name of the column containing the key
+ *               vColumnValue  - Name of the column containing the value
+ *               vDelimeter    - String to seperate the diffent values
+ *                              ',' is used by defaut
+ *               vWorkingTable - Temporary table to use
+ *                              '_vSplitWorkTable' is used by defaut
+ *      Output : None
+ */
+Sub content_line_concatenate(vTableName, vColumnKey, vColumnValue, vDelimeter, vWorkingTable)
+    SET vDefaultDelimeter=',';
+    SET vDefaultWorkingTable='_vSplitWorkTable';
+    call variable_fill('vDelimeter', vDefaultDelimeter);
+    call variable_fill('vWorkingTable', vDefaultWorkingTable);
+
+    LET vRowCount=NoOfRows(vTableName);
+    IF vRowCount>0 THEN
+        call table_drop(vWorkingTable);
+        call column_drop('_KEY');
+        call column_drop('_VALUE');
+        $(vWorkingTable):
+        LOAD DISTINCT Trim($(vColumnKey))   as _KEY,
+                      Trim($(vColumnValue)) as _VALUE
+        RESIDENT $(vTableName)
+        ORDER BY $(vColumnKey), $(vColumnValue);
+        call table_drop(vTableName);
+
+        LET vRowCount=NoOfRows(vWorkingTable);
+        LET vPreviousKey='';
+        LET vValues='';
+        LET vFlag=0;
+        FOR vPos=0 TO (vRowCount-1)
+            LET vKey=Peek('_KEY', vPos, vWorkingTable);
+            LET vValue=Peek('_VALUE', vPos, vWorkingTable);
+
+            IF (vPos=(vRowCount-1)) THEN
+                IF (vFlag=0) THEN
+                    vValues=vValue;
+                    vFlag=1;
+                ELSE
+                    vValues=vValues & vDelimeter & vValue;
+                END IF;
+            END IF;
+
+            IF ((vPos>0 AND vPreviousKey<>vKey) OR (vPos=(vRowCount-1))) THEN
+                $(vTableName):
+                LOAD * INLINE[
+                    vColumnKey,        vColumnValue
+                    '$(vPreviousKey)', '$(vValues)'
+                ];
+                vValues=vValue;
+                vFlag=0;
+            END IF;
+
+            vPreviousKey=vKey;
+            IF (vFlag=0) THEN
+                vValues=vValue;
+                vFlag=1;
+            ELSE
+                vValues=vValues & vDelimeter & vValue;
+            END IF;
+        NEXT vPos;
+        call table_drop(vWorkingTable);
+    ELSE
+        TRACE No line to process;
+    END IF;
+
+    LET vDelimeter=vDefaultDelimeter;
+    LET vWorkingTable=vDefaultWorkingTable;
 End sub;
 
 // ----------------------------------------------------------------------------------------------------------------

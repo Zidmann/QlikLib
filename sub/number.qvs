@@ -28,7 +28,7 @@ SET number_pos = IF($1>0, +$1, 0);
 SET number_neg = IF($1<0, -$1, 0);
 
 /*
- * Description : Return which sign has a number (0 is considered as having no sign) 
+ * Description : Return which sign has a number (0 is considered having no sign)
  *       Input : $1 - Number to process
  *      Output : None
  */

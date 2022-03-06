@@ -14,35 +14,35 @@ LET vErrorCount = $(ScriptErrorCount);
 // ----------------------------------------------------------------------------------------------------------------
 
 /*
- * Description : Extract the directory of a file
+ * Description : Extract the year from a date
  *       Input : $1 - Date to process
  *      Output : None
  */
 SET date_year = YEAR($1);
 
 /*
- * Description : 
+ * Description : Extract the month from a date
  *       Input : $1 - Date to process
  *      Output : None
  */
 SET date_month = RIGHT('0' & NUM(MONTH($1)), 2);
 
 /*
- * Description : Extract the directory of a file
+ * Description : Extract the day from a date
  *       Input : $1 - Date to process
  *      Output : None
  */
 SET date_day = RIGHT('0' & DAY($1), 2);
 
 /*
- * Description : Extract the directory of a file
+ * Description : Extract the year and the month set to the YYYY-MM pattern from a date
  *       Input : $1 - Date to process
  *      Output : None
  */
 SET date_yearmonth = YEAR($1) & '-' & RIGHT('0' & NUM(MONTH($1)), 2);
 
 /*
- * Description : Extract the directory of a file
+ * Description : Extract the year and the month set to the YYYY-MM-DD pattern from a date
  *       Input : $1 - Date to process
  *      Output : None
  */
