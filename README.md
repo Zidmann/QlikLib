@@ -67,6 +67,9 @@ Some functions have not been implemented yet in the tests :
 | number_sign | Return which sign has a number (0 is considered as having no sign) |
 | number_abs | Return the absolute value of a number |
 | number_order | Return the order in the 10 base of a number |
+| filesize_order | Return the appropriate order to use with a file size |
+| filesize_unit | Return the appropriate unit to use with a file size |
+| filesize_readable | Return the size of a file in a readable form |
 
 
 * file.qvs - Module containing all the file management functions
@@ -107,6 +110,7 @@ Some functions have not been implemented yet in the tests :
 | ---- | ---- |
 | histogram_ranges_from_values | Add a new column in a table with the range of the each value in a specific column according a table containing all the ranges |
 | histogram_ranges_from_function | Add a new column in a table with the range of the each value in a specific column according a function |
+
 
 * date.qvs - Module containing all the date management functions
 
