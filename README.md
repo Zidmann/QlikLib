@@ -2,7 +2,7 @@
 By [Zidmann](mailto:emmanuel.zidel@gmail.com) :bow:
 
 ## Description
-Simple library of functions to use with Qlik project
+Simple library of functions to use with Qlik project.
 
 ## How to use
 In the QVW document, add these lines with vQliklibPath containing the path of the QlikLib library.
@@ -64,7 +64,7 @@ Some functions have not been implemented yet in the tests :
 | ---- | ---- |
 | number_pos | Return 0 if the number is positive or its value |
 | number_neg | Return 0 if the number is negative or its value |
-| number_sign | Return which sign has a number (0 is considered as having no sign) |
+| number_sign | Return which sign has a number (0 is considered having no sign) |
 | number_abs | Return the absolute value of a number |
 | number_order | Return the order in the 10 base of a number |
 | filesize_order | Return the appropriate order to use with a file size |
@@ -106,6 +106,7 @@ Some functions have not been implemented yet in the tests :
 
 
 * histogram.qvs - Module containing all the histogram management functions
+
 | Name | Description |
 | ---- | ---- |
 | histogram_ranges_from_values | Add a new column in a table with the range of the each value in a specific column according a table containing all the ranges |
@@ -127,5 +128,5 @@ Some functions have not been implemented yet in the tests :
 
 | Name | Description |
 | ---- | ---- |
-| string_find_specific_content     | |
-| string_replace_special_character | Building a string search function to catch some words from a list in a table |
+| string_find_specific_content     | Building a string search function to catch some words from a list in a table |
+| string_replace_special_character | Remove special characters in a string |
