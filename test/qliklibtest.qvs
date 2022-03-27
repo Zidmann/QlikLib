@@ -36,6 +36,37 @@ SET vMyNumber = -99; LET vPos = $(number_pos($(vMyNumber))); LET vNeg = $(number
 TRACE Test of the maccros number_pos/number_neg/number_sign/number_abs/number_order with vMyNumber=$(vMyNumber) : vPos=$(vPos)/vNeg=$(vNeg)/vSign=$(vSign)/vAbs=$(vAbs)/vOrder=$(vOrder);
 TRACE;
 
+TRACE == Testing the useful size functions ==;
+SET vMySize = 0;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 50;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 512;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1000;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1024;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 2048;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 50000;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1048576;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 500000000;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1073741824;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 500000000000;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1099511627776;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 5000000000000;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+SET vMySize = 1125899906842624;   LET vOrder = $(filesize_order($(vMySize))); LET vUnit = $(filesize_unit($(vMySize))); LET vReadable = $(filesize_readable($(vMySize)));
+TRACE Test of the maccros filesize_order/filesize_unit/filesize_readable with vMySize=$(vMySize) : vOrder=$(vOrder)/vUnit=$(vUnit)/vReadable=$(vReadable);
+TRACE;
+
 TRACE == Testing the file management functions ==;
 SET vPath = C:\dir1\dir2\dir3\File.ext;        TRACE vPath=$(vPath);
 LET vDirname = $(file_dirname(vPath));         TRACE Test of the macro file_dirname : vDirname=$(vDirname);
@@ -223,5 +254,8 @@ LET vYearMonthDay = $(date_yearmonthday(vDate)); TRACE Test of the macro date_ye
 TRACE;
 
 TRACE == Testing the string functions ==;
-TRACE No function available yet;
+LET vStringInput='Une phrase à regarder également';
+TRACE vStringInput=$(vStringInput);
+LET vStringOutput=$(string_replace_special_character(vStringInput));
+TRACE vStringOutput=$(vStringOutput);
 TRACE;
