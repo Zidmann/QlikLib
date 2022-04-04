@@ -18,7 +18,7 @@ LET vErrorCount = $(ScriptErrorCount);
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_dirname = Left($1, Index($1, '\', -1));
+SET file_dirname = Left($1, Index($1, '\', -1)-1);
 
 /*
  * Description : Extract the basename of a file
@@ -39,7 +39,7 @@ SET file_extension = IF(Index(Subfield($1, '\', -1), '.', -1)>0, Trim(Subfield(S
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_dirname_unix = Left($1, Index($1, '/', -1));
+SET file_dirname_unix = Left($1, Index($1, '/', -1)-1);
 
 /*
  * Description : Extract the basename of a file in the case of a Unix path
