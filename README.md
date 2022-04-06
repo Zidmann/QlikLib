@@ -79,9 +79,11 @@ Some functions have not been implemented yet in the tests :
 | file_dirname | Extract the directory of a file |
 | file_basename | Extract the basename of a file |
 | file_extension | Extract the extension of a file |
+| file_depth | Extract the depth of a file in a tree |
 | file_dirname_unix | Extract the directory of a file in the case of a Unix path |
 | file_basename_unix | Extract the basename of a file in the case of a Unix path |
 | file_extension_unix | Extract the extension of a file in the case of a Unix path |
+| file_depth_unix | Extract the depth of a file in a tree in the case of a Unix path |
 | file_size | Extract the size of a file |
 | file_option | Get from the path of a file the option to use to load or store data |
 | file_remove | Deleting a file |
