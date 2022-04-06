@@ -39,7 +39,7 @@ SET file_extension = IF(Index(Subfield($1, '\', -1), '.', -1)>0, Trim(Subfield(S
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_depth = SubStringCount($1, '\')+1;
+SET file_depth = SubStringCount(Left($1, Len($1)-1), '\');
 
 /*
  * Description : Extract the directory of a file in the case of a Unix path
@@ -67,7 +67,7 @@ SET file_extension_unix = IF(Index(Subfield($1, '/', -1), '.', -1)>0, Trim(Subfi
  *       Input : $1 - Path of the file
  *      Output : None
  */
-SET file_depth_unix = SubStringCount($1, '/')+1;
+SET file_depth_unix = SubStringCount(Left($1, Len($1)-1), '/');
 
 /*
  * Description : Extract the size of a file
