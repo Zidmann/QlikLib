@@ -35,6 +35,13 @@ SET file_basename = Subfield($1, '\', -1);
 SET file_extension = IF(Index(Subfield($1, '\', -1), '.', -1)>0, Trim(Subfield(Subfield($1, '\', -1), '.', -1)), '');
 
 /*
+ * Description : Extract the depth of a file in a tree
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_depth = SubStringCount(Left($1, Len($1)-1), '\');
+
+/*
  * Description : Extract the directory of a file in the case of a Unix path
  *       Input : $1 - Path of the file
  *      Output : None
@@ -54,6 +61,13 @@ SET file_basename_unix = Subfield($1, '/', -1);
  *      Output : None
  */
 SET file_extension_unix = IF(Index(Subfield($1, '/', -1), '.', -1)>0, Trim(Subfield(Subfield($1, '/', -1), '.', -1)), '');
+
+/*
+ * Description : Extract the depth of a file in a tree in the case of a Unix path
+ *       Input : $1 - Path of the file
+ *      Output : None
+ */
+SET file_depth_unix = SubStringCount(Left($1, Len($1)-1), '/');
 
 /*
  * Description : Extract the size of a file

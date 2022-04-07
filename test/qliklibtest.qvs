@@ -72,12 +72,14 @@ SET vPath = C:\dir1\dir2\dir3\File.ext;        TRACE vPath=$(vPath);
 LET vDirname = $(file_dirname(vPath));         TRACE Test of the macro file_dirname : vDirname=$(vDirname);
 LET vBasename = $(file_basename(vPath));       TRACE Test of the macro file_basename : vBasename=$(vBasename);
 LET vFileExtension = $(file_extension(vPath)); TRACE Test of the macro file_extension : vFileExtension=$(vFileExtension);
+LET vFileDepth = $(file_depth(vPath)); TRACE Test of the macro file_depth : vFileDepth=$(vFileDepth);
 TRACE;
 
 SET vUnixPath = /home/user/directory/file.extension;    TRACE vUnixPath=$(vUnixPath);
 LET vDirname = $(file_dirname_unix(vUnixPath));         TRACE Test of the macro file_dirname_unix : vDirname=$(vDirname);
 LET vBasename = $(file_basename_unix(vUnixPath));       TRACE Test of the macro file_basename_unix : vBasename=$(vBasename);
 LET vFileExtension = $(file_extension_unix(vUnixPath)); TRACE Test of the macro file_extension_unix : vFileExtension=$(vFileExtension);
+LET vFileDepth = $(file_depth_unix(vUnixPath)); TRACE Test of the macro file_depth_unix : vFileDepth=$(vFileDepth);
 TRACE;
 
 LET vPath = DocumentPath(); TRACE vPath=$(vPath);
